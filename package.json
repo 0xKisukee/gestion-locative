@@ -17,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/0xKisukee/gestion-locative/issues"
   },
-  "homepage": "https://github.com/0xKisukee/gestion-locative#readme"
+  "homepage": "https://github.com/0xKisukee/gestion-locative#readme",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
 }
