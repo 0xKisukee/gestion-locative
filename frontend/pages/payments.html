@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes Factures - Gestion Locative</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+</head>
+<body>
+    <div class="container">
+        <header class="py-3 mb-4 border-bottom">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <a href="dashboard.html" class="text-decoration-none text-dark">
+                        <h1 class="h4">Gestion Locative</h1>
+                    </a>
+                </div>
+                <div id="user-info">
+                    <span id="user-email" class="me-3"></span>
+                    <button id="logout-btn" class="btn btn-outline-danger">Déconnexion</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Mes Factures & Paiements</h2>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPaymentModal">
+                <i class="bi bi-plus-circle me-2"></i>Enregistrer un paiement
+            </button>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card text-center mb-3">
+                    <div class="card-body">
+                        <h5 class="text-primary">Loyers du mois</h5>
+                        <h2 class="display-6">3 550 €</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center mb-3">
+                    <div class="card-body">
+                        <h5 class="text-success">Paiements reçus</h5>
+                        <h2 class="display-6">2 700 €</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center mb-3">
+                    <div class="card-body">
+                        <h5 class="text-danger">En attente</h5>
+                        <h2 class="display-6">850 €</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-search me-2"></i>Filtres
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label for="filter-tenant" class="form-label">Locataire</label>
+                        <select class="form-select" id="filter-tenant">
+                            <option value="">Tous</option>
+                            <option>Dupont Martin</option>
+                            <option>Lefevre Sophie</option>
+                            <option>Bernard Thomas</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="filter-property" class="form-label">Bien</label>
+                        <select class="form-select" id="filter-property">
+                            <option value="">Tous</option>
+                            <option>Appartement Paris</option>
+                            <option>Maison Lyon</option>
+                            <option>Studio Marseille</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="filter-status" class="form-label">Statut</label>
+                        <select class="form-select" id="filter-status">
+                            <option value="">Tous</option>
+                            <option>Payé</option>
+                            <option>En attente</option>
+                            <option>En retard</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="filter-date" class="form-label">Période</label>
+                        <select class="form-select" id="filter-date">
+                            <option>Mars 2025</option>
+                            <option>Février 2025</option>
+                            <option>Janvier 2025</option>
+                            <option>Décembre 2024</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                Liste des paiements
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Référence</th>
+                                <th>Date</th>
+                                <th>Locataire</th>
+                                <th>Bien</th>
+                                <th>Montant</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>RENT-2025-001</td>
+                                <td>05/03/2025</td>
+                                <td>Dupont Martin</td>
+                                <td>Appartement Paris</td>
+                                <td>1 200 €</td>
+                                <td><span class="badge bg-success">Payé</span></td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-outline-primary"><i class="bi bi-file-text"></i></button>
+                                        <button class="btn btn-sm btn-outline-secondary"><i class="bi bi-envelope"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-x-circle"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>RENT-2025-002</td>
+                                <td>10/03/2025</td>
+                                <td>Lefevre Sophie</td>
+                                <td>Maison Lyon</td>
+                                <td>1 500 €</td>
+                                <td><span class="badge bg-success">Payé</span></td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-outline-primary"><i class="bi bi-file-text"></i></button>
+                                        <button class="btn btn-sm btn-outline-secondary"><i class="bi bi-envelope"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-x-circle"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>RENT-2025-003</td>
+                                <td>15/03/2025</td>
+                                <td>Bernard Thomas</td>
+                                <td>Studio Marseille</td>
+                                <td>850 €</td>
+                                <td><span class="badge bg-danger">En retard</span></td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-outline-primary"><i class="bi bi-file-text"></i></button>
+                                        <button class="btn btn-sm btn-outline-secondary"><i class="bi bi-envelope"></i></button>
+                                        <button class="btn btn-sm btn-outline-warning"><i class="bi bi-exclamation-circle"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Payment Modal -->
+        <div class="modal fade" id="addPaymentModal" tabindex="-1" aria-labelledby="addPaymentModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addPaymentModalLabel">Enregistrer un paiement</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="add-payment-form">
+                            <div class="mb-3">
+                                <label for="payment-tenant" class="form-label">Locataire</label>
+                                <select class="form-select" id="payment-tenant" required>
+                                    <option value="">Sélectionner...</option>
+                                    <option>Dupont Martin</option>
+                                    <option>Lefevre Sophie</option>
+                                    <option>Bernard Thomas</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="payment-property" class="form-label">Bien</label>
+                                <select class="form-select" id="payment-property" required>
+                                    <option value="">Sélectionner...</option>
+                                    <option>Appartement Paris</option>
+                                    <option>Maison Lyon</option>
+                                    <option>Studio Marseille</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="payment-amount" class="form-label">Montant (€)</label>
+                                <input type="number" class="form-control" id="payment-amount" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="payment-date" class="form-label">Date de paiement</label>
+                                <input type="date" class="form-control" id="payment-date" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="payment-method" class="form-label">Méthode de paiement</label>
+                                <select class="form-select" id="payment-method" required>
+                                    <option value="">Sélectionner...</option>
+                                    <option>Virement bancaire</option>
+                                    <option>Chèque</option>
+                                    <option>Espèces</option>
+                                    <option>Prélèvement automatique</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="payment-notes" class="form-label">Notes</label>
+                                <textarea class="form-control" id="payment-notes" rows="2"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                        <button type="button" class="btn btn-primary" id="save-payment-btn">Enregistrer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-5 py-3 text-center border-top">
+            <p>&copy; 2025 Gestion Locative</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in
+            if (!isLoggedIn()) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Display user info
+            const user = getCurrentUser();
+            if (user) {
+                document.getElementById('user-email').textContent = user.email;
+            }
+            
+            // Handle save payment button
+            document.getElementById('save-payment-btn').addEventListener('click', function() {
+                // Implement payment saving logic here
+                alert('Fonctionnalité d\'ajout de paiement à implémenter dans le backend');
+                // Close modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('addPaymentModal'));
+                modal.hide();
+            });
+        });
+    </script>
+</body>
+</html>
