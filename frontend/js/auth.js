@@ -43,6 +43,7 @@ function register(username, email, password) {
             // Display success message
             successMsgElement.textContent = 'Compte créé avec succès! Redirection vers la page de connexion...';
             successMsgElement.style.display = 'block';
+            errorMsgElement.style.display = 'none';
 
             // Clear form
             document.getElementById('register-form').reset();
