@@ -103,9 +103,33 @@ async function getOwnerProperties(userId) {
     return transformedProperties;
 }
 
+async function getPropertyByTenantId(userId) {
+    // Verfy that user has "tenant" role
+    const tenant = await User.findByPk(userId);
+    if (!tenant || tenant.role !== "tenant") {
+        throw new AppError('User needs the "tenant" role', 400);
+    }
+
+    // Finds a property with the corresponding tenant id
+    const property = await Property.findOne({
+        where: {
+            tenantId: userId
+        },
+        attributes: { exclude: ['ownerId'] },
+        include: [{
+            model: User,
+            as: 'owner',
+            attributes: { exclude: ['password'] }
+        }]
+    });
+
+    return property;
+}
+
 module.exports = {
     createProperty,
     updateProperty,
     getPropertyInfo,
     getOwnerProperties,
+    getPropertyByTenantId,
 };

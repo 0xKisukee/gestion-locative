@@ -1,4 +1,5 @@
 const userService = require('../services/user.service.js');
+const propertyService = require('../services/property.service.js');
 const bcrypt = require('bcrypt');
 
 async function login(req, res, next) {
@@ -30,7 +31,21 @@ async function createUser(req, res, next) {
     }
 }
 
+async function getProperty(req, res, next) {
+    try {
+        const userId = req.auth.userId;
+
+        // Find the property where this user is tenant
+        const property = await propertyService.getPropertyByTenantId(userId);
+
+        res.json(property);
+    } catch (err) {
+        next(err);
+    }
+}
+
 module.exports = {
     createUser,
     login,
+    getProperty,
 };

@@ -8,5 +8,10 @@ router.post('/create', userController.createUser);
 router.post('/login', userController.login);
 
 // Protected routes
+router.get(
+    '/myProperty',
+    auth.authenticateJwt,
+    userController.getProperty,
+);
 
 module.exports = router;
