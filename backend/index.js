@@ -4,6 +4,7 @@ const cors = require('cors');
 
 // Import routes
 const userRoutes = require('./routes/user.route');
+const propertyRoutes = require('./routes/property.route');
 
 // Import database
 const sequelize = require('./database');
@@ -30,6 +31,7 @@ app.use(express.static('../frontend'));
 
 // Routes
 app.use('/api/user', userRoutes);
+app.use('/api/property', propertyRoutes);
 
 // Base route
 app.get('/', (req, res) => {
@@ -52,12 +54,22 @@ app.listen(PORT, () => {
     await sequelize.sync({ force: true/*, logging: console.log*/ });
     console.log('Tables successfully created.');
 
-    const hashedPassword = await bcrypt.hash(process.env.ADMIN_PWD, 10);
+    // Create 2 users
+    const hashedPassword = await bcrypt.hash(process.env.OWNER_PWD, 10);
     await User.create(
         {
-            "username": process.env.ADMIN_USERNAME,
-            "email": process.env.ADMIN_EMAIL,
-            "password": hashedPassword
+            "username": process.env.OWNER_USERNAME,
+            "email": process.env.OWNER_EMAIL,
+            "password": hashedPassword,
+            "role": "owner"
+        }
+    );
+    await User.create(
+        {
+            "username": process.env.TENANT_USERNAME,
+            "email": process.env.TENANT_EMAIL,
+            "password": hashedPassword,
+            "role": "tenant"
         }
     );
 })();
