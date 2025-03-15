@@ -44,6 +44,7 @@ async function createProperty(propertyData) {
             throw new Error('Erreur lors de la création de la propriété');
         }
         
+        document.getElementById('no-properties-message').classList.add('d-none');
         return await response.json();
     } catch (error) {
         console.error('Erreur:', error);
