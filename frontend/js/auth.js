@@ -33,12 +33,12 @@ function login(email, password) {
 }
 
 // Register function
-function register(username, email, password) {
+function register(username, email, role, password) {
     const errorMsgElement = document.getElementById('error-message');
     const successMsgElement = document.getElementById('success-message');
 
     // Call the register API
-    apiCall('/api/user/create', 'POST', { username, email, password })
+    apiCall('/api/user/create', 'POST', { username, email, role, password })
         .then(data => {
             // Display success message
             successMsgElement.textContent = 'Compte créé avec succès! Redirection vers la page de connexion...';

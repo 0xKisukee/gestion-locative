@@ -3,20 +3,10 @@ function getToken() {
     return localStorage.getItem('token');
 }
 
-// Fonction pour vérifier et corriger le rôle si nécessaire
-function checkAndFixUserRole() {
-    const user = getCurrentUser();
-    if (!user) return null;
-    
-    // Si l'email contient "owner", forcer le rôle à "owner"
-    if (user.email && user.email.includes('owner')) {
-        user.role = 'owner';
-        // Mettre à jour l'utilisateur dans le localStorage
-        localStorage.setItem('user', JSON.stringify(user));
-        console.log("Rôle corrigé à 'owner' basé sur l'email");
-    }
-    
-    return user;
+// Get current user from localStorage
+function getCurrentUser() {
+    const userJson = localStorage.getItem('user');
+    return userJson ? JSON.parse(userJson) : null;
 }
 
 // Fonction pour charger les propriétés d'un propriétaire
@@ -169,7 +159,7 @@ async function initDashboard() {
     }
     
     // Récupérer, corriger si nécessaire, et afficher les informations de l'utilisateur
-    const user = checkAndFixUserRole();
+    const user = getCurrentUser();
     console.log("User info après correction:", user);
     
     if (user) {
