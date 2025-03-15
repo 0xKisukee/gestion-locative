@@ -127,7 +127,6 @@ function createPropertyCard(property) {
     
     card.innerHTML = `
         <div class="card h-100">
-            <img src="/api/placeholder/300/200" class="card-img-top" alt="${propertyType} à ${property.city}">
             <div class="card-body">
                 <h5 class="card-title">${propertyType} - ${property.city}</h5>
                 <p class="card-text">${propertyType}, ${property.surface}m²</p>
