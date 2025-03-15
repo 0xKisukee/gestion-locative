@@ -69,7 +69,7 @@ function checkTokenExpiration() {
  * Extrait et retourne le rôle de l'utilisateur à partir du token JWT stocké
  * @returns {string|null} Le rôle de l'utilisateur ('owner', 'tenant', etc.) ou null si non disponible
  */
-export function getUserRole() {
+function getUserRole() {
     const token = localStorage.getItem('token');
     
     if (!token) {
@@ -100,12 +100,12 @@ export function getUserRole() {
  * @param {string} role Le rôle à vérifier ('owner', 'tenant', etc.)
  * @returns {boolean} True si l'utilisateur a le rôle spécifié, false sinon
  */
-export function hasRole(role) {
+function hasRole(role) {
     const userRole = getUserRole();
     return userRole === role;
 }
 
 // Fonction pour obtenir le token d'authentification 
-export function getToken() {
+function getToken() {
     return localStorage.getItem('token');
 }

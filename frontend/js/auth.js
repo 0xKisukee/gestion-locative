@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-export function clearLocalStorage() {
+function clearLocalStorage() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
 }

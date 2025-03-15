@@ -1,4 +1,7 @@
-import { clearLocalStorage } from './auth';
+function clearLocalStorage() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+}
 
 // API related functions
 

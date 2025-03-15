@@ -1,4 +1,7 @@
-import { getToken } from './main';
+// Fonction pour obtenir le token d'authentification 
+function getToken() {
+    return localStorage.getItem('token');
+}
 
 // Fonction pour vérifier et corriger le rôle si nécessaire
 function checkAndFixUserRole() {
