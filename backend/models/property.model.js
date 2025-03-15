@@ -64,8 +64,8 @@ Property.beforeCreate(async (property) => {
   const User = require('./user.model'); // Import User here to avoid circular references
   
   const owner = await User.findByPk(property.ownerId);
-  if (!owner || owner.role !== 'proprietaire') {
-    throw new Error('Le propriétaire doit avoir le rôle "proprietaire"');
+  if (!owner || owner.role !== 'owner') {
+    throw new Error('Owner needs "owner" role');
   }
   
   // No tenant verification at creation
@@ -76,18 +76,11 @@ Property.beforeCreate(async (property) => {
 Property.beforeUpdate(async (property) => {
   const User = require('./user.model');
   
-  if (property.changed('ownerId')) {
-    const owner = await User.findByPk(property.ownerId);
-    if (!owner || owner.role !== 'proprietaire') {
-      throw new Error('Le propriétaire doit avoir le rôle "proprietaire"');
-    }
-  }
-  
-  // Vérification du locataire uniquement lors de la mise à jour
+  // Verify tenant only on update
   if (property.changed('tenantId') && property.tenantId) {
     const tenant = await User.findByPk(property.tenantId);
-    if (!tenant || tenant.role !== 'locataire') {
-      throw new Error('Le locataire doit avoir le rôle "locataire"');
+    if (!tenant || tenant.role !== 'tenant') {
+      throw new Error('Tenant needs "tenant" role');
     }
   }
 });
