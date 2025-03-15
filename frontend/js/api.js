@@ -1,3 +1,5 @@
+import { clearLocalStorage } from './auth';
+
 // API related functions
 
 // Base API URL
@@ -49,8 +51,7 @@ async function apiCall(endpoint, method = 'GET', data = null) {
 // Function to handle unauthorized requests (token expired)
 function handleUnauthorized() {
     // Clear localStorage and redirect to login
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    clearLocalStorage();
     window.location.href = '/pages/login.html';
     
     // Show an alert

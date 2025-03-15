@@ -14,6 +14,7 @@
             <div class="d-flex align-items-center justify-content-between">
                 <h1 class="h4">Gestion Locative</h1>
                 <div id="user-info">
+                    <span id="user-role" class="badge bg-primary me-2"></span>
                     <span id="user-email" class="me-3"></span>
                     <button id="logout-btn" class="btn btn-outline-danger">Déconnexion</button>
                 </div>
@@ -24,101 +25,128 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        <h2 class="card-title">Bienvenue sur votre tableau de bord <span id="user-firstname"></span> !</h2>
-                        <p class="card-text">Vous êtes connecté en tant que <span id="username-display"></span>.</p>
+                        <h2 class="card-title">Bienvenue sur votre tableau de bord <span id="user-username"></span> !</h2>
+                        <p class="card-text">Vous êtes connecté en tant que <span id="user-role-text"></span>.</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="row mb-4">
-            <div class="col-md-4 mb-3">
-                <div class="card dashboard-card h-100">
-                    <div class="card-body text-center">
-                        <i class="bi bi-house-door fs-1 text-primary mb-3"></i>
-                        <h5 class="card-title">Mes biens</h5>
-                        <p class="card-text">Consultez et gérez vos biens immobiliers.</p>
-                        <a href="properties.html" class="btn btn-outline-primary">Accéder</a>
+        <!-- Section pour propriétaires uniquement -->
+        <div id="owner-section" class="d-none">
+            <div class="row mb-4">
+                <div class="col-md-4 mb-3">
+                    <div class="card dashboard-card h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-house-door fs-1 text-primary mb-3"></i>
+                            <h5 class="card-title">Mes biens</h5>
+                            <p class="card-text">Consultez et gérez vos biens immobiliers.</p>
+                            <a href="properties.html" class="btn btn-outline-primary">Accéder</a>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-4 mb-3">
-                <div class="card dashboard-card h-100">
-                    <div class="card-body text-center">
-                        <i class="bi bi-people fs-1 text-success mb-3"></i>
-                        <h5 class="card-title">Mes locataires</h5>
-                        <p class="card-text">Consultez la liste de vos locataires et leurs informations.</p>
-                        <a href="tenants.html" class="btn btn-outline-success">Accéder</a>
+                <div class="col-md-4 mb-3">
+                    <div class="card dashboard-card h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-people fs-1 text-success mb-3"></i>
+                            <h5 class="card-title">Mes locataires</h5>
+                            <p class="card-text">Consultez la liste de vos locataires et leurs informations.</p>
+                            <a href="tenants.html" class="btn btn-outline-success">Accéder</a>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-4 mb-3">
-                <div class="card dashboard-card h-100">
-                    <div class="card-body text-center">
-                        <i class="bi bi-receipt fs-1 text-warning mb-3"></i>
-                        <h5 class="card-title">Mes factures</h5>
-                        <p class="card-text">Gérez vos factures et suivez vos paiements.</p>
-                        <a href="payments.html" class="btn btn-outline-warning">Accéder</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <div class="card h-100">
-                    <div class="card-header">
-                        Dernières notifications
-                    </div>
-                    <div class="card-body">
-                        <div class="list-group">
-                            <a href="#" class="list-group-item list-group-item-action">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <h6 class="mb-1">Paiement reçu</h6>
-                                    <small>il y a 3 jours</small>
-                                </div>
-                                <p class="mb-1">Le loyer pour l'appartement rue de Paris a été reçu.</p>
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <h6 class="mb-1">Contrat à renouveler</h6>
-                                    <small>il y a 1 semaine</small>
-                                </div>
-                                <p class="mb-1">Le contrat de location pour l'appartement rue du Commerce arrive à échéance.</p>
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <h6 class="mb-1">Demande de réparation</h6>
-                                    <small>il y a 2 semaines</small>
-                                </div>
-                                <p class="mb-1">Un locataire a signalé un problème de plomberie.</p>
-                            </a>
+                <div class="col-md-4 mb-3">
+                    <div class="card dashboard-card h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-receipt fs-1 text-warning mb-3"></i>
+                            <h5 class="card-title">Mes factures</h5>
+                            <p class="card-text">Gérez vos factures et suivez vos paiements.</p>
+                            <a href="payments.html" class="btn btn-outline-warning">Accéder</a>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 mb-3">
-                <div class="card h-100">
-                    <div class="card-header">
-                        Statistiques rapides
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            Dernières notifications
+                        </div>
+                        <div class="card-body">
+                            <div id="owner-notifications" class="list-group">
+                                <!-- Les notifications seront chargées dynamiquement -->
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <div class="row text-center">
-                            <div class="col-6 mb-3">
-                                <h2 class="text-primary">3</h2>
-                                <p>Biens en location</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            Statistiques rapides
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-6 mb-3">
+                                    <h2 id="properties-count" class="text-primary">--</h2>
+                                    <p>Biens en location</p>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <h2 id="tenants-count" class="text-success">--</h2>
+                                    <p>Locataires actifs</p>
+                                </div>
+                                <div class="col-6">
+                                    <h2 id="contracts-count" class="text-info">--</h2>
+                                    <p>Contrats à renouveler</p>
+                                </div>
+                                <div class="col-6">
+                                    <h2 id="pending-payments" class="text-warning">--</h2>
+                                    <p>Paiements en attente</p>
+                                </div>
                             </div>
-                            <div class="col-6 mb-3">
-                                <h2 class="text-success">5</h2>
-                                <p>Locataires actifs</p>
-                            </div>
-                            <div class="col-6">
-                                <h2 class="text-info">2</h2>
-                                <p>Contrats à renouveler</p>
-                            </div>
-                            <div class="col-6">
-                                <h2 class="text-warning">1</h2>
-                                <p>Paiements en attente</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section pour locataires uniquement -->
+        <div id="tenant-section" class="d-none">
+            <div class="row mb-4">
+                <div class="col-md-6 mb-3">
+                    <div class="card dashboard-card h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-house-door fs-1 text-primary mb-3"></i>
+                            <h5 class="card-title">Mon logement</h5>
+                            <p class="card-text">Consultez les détails de votre location.</p>
+                            <a href="my-rental.html" class="btn btn-outline-primary">Accéder</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card dashboard-card h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-receipt fs-1 text-warning mb-3"></i>
+                            <h5 class="card-title">Mes paiements</h5>
+                            <p class="card-text">Suivez l'historique de vos paiements.</p>
+                            <a href="my-payments.html" class="btn btn-outline-warning">Accéder</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            Informations sur mon logement
+                        </div>
+                        <div id="tenant-property-info" class="card-body">
+                            <!-- Les informations seront chargées dynamiquement -->
+                            <div class="text-center">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Chargement...</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -131,28 +159,10 @@
         </footer>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../js/api.js"></script>
     <script src="../js/auth.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check if user is logged in
-            if (!isLoggedIn()) {
-                window.location.href = 'login.html';
-                return;
-            }
-            
-            // Display user info
-            const user = getCurrentUser();
-            if (user) {
-                document.getElementById('user-email').textContent = user.email;
-                document.getElementById('username-display').textContent = user.email;
-            }
-            
-            // Handle logout
-            document.getElementById('logout-btn').addEventListener('click', function() {
-                logout();
-            });
-        });
-    </script>
+    <script src="../js/main.js"></script>
+    <script src="../js/dashboard.js"></script>
 </body>
 </html>

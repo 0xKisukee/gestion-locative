@@ -18,6 +18,7 @@
                     </a>
                 </div>
                 <div id="user-info">
+                    <span id="user-role" class="badge bg-primary me-2"></span>
                     <span id="user-email" class="me-3"></span>
                     <button id="logout-btn" class="btn btn-outline-danger">Déconnexion</button>
                 </div>
@@ -31,64 +32,42 @@
             </button>
         </div>
 
-        <div class="row mb-4">
-            <!-- Property Cards will be dynamically added here in a real app -->
-            <div class="col-md-4 mb-3">
-                <div class="card h-100">
-                    <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Appartement Paris">
-                    <div class="card-body">
-                        <h5 class="card-title">Appartement Paris</h5>
-                        <p class="card-text">Appartement 3 pièces, 65m²</p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="badge bg-success">Loué</span>
-                            <span class="fw-bold">1200€/mois</span>
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <div class="btn-group w-100">
-                            <button class="btn btn-outline-primary">Détails</button>
-                            <button class="btn btn-outline-secondary">Modifier</button>
-                        </div>
-                    </div>
-                </div>
+        <!-- Spinner de chargement -->
+        <div id="loading-spinner" class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Chargement...</span>
             </div>
-            
-            <div class="col-md-4 mb-3">
-                <div class="card h-100">
-                    <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Maison Lyon">
-                    <div class="card-body">
-                        <h5 class="card-title">Maison Lyon</h5>
-                        <p class="card-text">Maison 4 pièces, 95m² avec jardin</p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="badge bg-success">Loué</span>
-                            <span class="fw-bold">1500€/mois</span>
-                        </div>
+            <p class="mt-2">Chargement de vos biens...</p>
+        </div>
+
+        <!-- Message d'erreur -->
+        <div id="error-message" class="alert alert-danger d-none" role="alert">
+            Impossible de charger vos biens. Veuillez réessayer plus tard.
+        </div>
+
+        <!-- Message si aucun bien -->
+        <div id="no-properties-message" class="alert alert-info d-none" role="alert">
+            <i class="bi bi-info-circle me-2"></i>Vous n'avez encore aucun bien enregistré. Cliquez sur "Ajouter un bien" pour commencer.
+        </div>
+
+        <!-- Liste des biens -->
+        <div id="properties-container" class="row mb-4">
+            <!-- Les propriétés seront ajoutées ici dynamiquement -->
+        </div>
+
+        <!-- Modal détails de propriété -->
+        <div class="modal fade" id="propertyDetailsModal" tabindex="-1" aria-labelledby="propertyDetailsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="propertyDetailsModalLabel">Détails du bien</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="card-footer">
-                        <div class="btn-group w-100">
-                            <button class="btn btn-outline-primary">Détails</button>
-                            <button class="btn btn-outline-secondary">Modifier</button>
-                        </div>
+                    <div class="modal-body" id="property-details-content">
+                        <!-- Le contenu sera chargé dynamiquement -->
                     </div>
-                </div>
-            </div>
-            
-            <div class="col-md-4 mb-3">
-                <div class="card h-100">
-                    <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Studio Marseille">
-                    <div class="card-body">
-                        <h5 class="card-title">Studio Marseille</h5>
-                        <p class="card-text">Studio, 35m² avec balcon vue mer</p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="badge bg-warning">Disponible</span>
-                            <span class="fw-bold">850€/mois</span>
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <div class="btn-group w-100">
-                            <button class="btn btn-outline-primary">Détails</button>
-                            <button class="btn btn-outline-secondary">Modifier</button>
-                        </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
                     </div>
                 </div>
             </div>
@@ -106,73 +85,94 @@
                         <form id="add-property-form">
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label for="property-title" class="form-label">Titre</label>
-                                    <input type="text" class="form-control" id="property-title" required>
-                                </div>
-                                <div class="col-md-6">
                                     <label for="property-type" class="form-label">Type de bien</label>
-                                    <select class="form-select" id="property-type" required>
+                                    <select class="form-select" id="property-type" name="detail" required>
                                         <option value="">Sélectionner...</option>
                                         <option value="apartment">Appartement</option>
                                         <option value="house">Maison</option>
-                                        <option value="studio">Studio</option>
-                                        <option value="commercial">Local commercial</option>
                                     </select>
                                 </div>
-                            </div>
-                            
-                            <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label for="property-size" class="form-label">Surface (m²)</label>
-                                    <input type="number" class="form-control" id="property-size" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="property-rooms" class="form-label">Nombre de pièces</label>
-                                    <input type="number" class="form-control" id="property-rooms" required>
+                                    <label for="property-surface" class="form-label">Surface (m²)</label>
+                                    <input type="number" class="form-control" id="property-surface" name="surface" required min="1">
                                 </div>
                             </div>
                             
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label for="property-address" class="form-label">Adresse</label>
-                                    <input type="text" class="form-control" id="property-address" required>
+                                    <input type="text" class="form-control" id="property-address" name="address" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="property-city" class="form-label">Ville</label>
-                                    <input type="text" class="form-control" id="property-city" required>
+                                    <input type="text" class="form-control" id="property-city" name="city" required>
                                 </div>
                             </div>
                             
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label for="property-price" class="form-label">Loyer mensuel (€)</label>
-                                    <input type="number" class="form-control" id="property-price" required>
+                                    <label for="property-rent" class="form-label">Loyer mensuel (€)</label>
+                                    <input type="number" class="form-control" id="property-rent" name="rent" required min="1">
                                 </div>
-                                <div class="col-md-6">
-                                    <label for="property-status" class="form-label">Statut</label>
-                                    <select class="form-select" id="property-status" required>
-                                        <option value="">Sélectionner...</option>
-                                        <option value="available">Disponible</option>
-                                        <option value="rented">Loué</option>
-                                        <option value="maintenance">En maintenance</option>
-                                    </select>
-                                </div>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="property-description" class="form-label">Description</label>
-                                <textarea class="form-control" id="property-description" rows="3"></textarea>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="property-photo" class="form-label">Photo</label>
-                                <input type="file" class="form-control" id="property-photo">
                             </div>
                         </form>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                         <button type="button" class="btn btn-primary" id="save-property-btn">Enregistrer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Édition de propriété -->
+        <div class="modal fade" id="editPropertyModal" tabindex="-1" aria-labelledby="editPropertyModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editPropertyModalLabel">Modifier un bien</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="edit-property-form">
+                            <input type="hidden" id="edit-property-id">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="edit-property-type" class="form-label">Type de bien</label>
+                                    <select class="form-select" id="edit-property-type" name="detail" required>
+                                        <option value="">Sélectionner...</option>
+                                        <option value="apartment">Appartement</option>
+                                        <option value="house">Maison</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="edit-property-surface" class="form-label">Surface (m²)</label>
+                                    <input type="number" class="form-control" id="edit-property-surface" name="surface" required min="1">
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="edit-property-address" class="form-label">Adresse</label>
+                                    <input type="text" class="form-control" id="edit-property-address" name="address" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="edit-property-city" class="form-label">Ville</label>
+                                    <input type="text" class="form-control" id="edit-property-city" name="city" required>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="edit-property-rent" class="form-label">Loyer mensuel (€)</label>
+                                    <input type="number" class="form-control" id="edit-property-rent" name="rent" required min="1">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                        <button type="button" class="btn btn-primary" id="update-property-btn">Mettre à jour</button>
                     </div>
                 </div>
             </div>
@@ -187,29 +187,6 @@
     <script src="../js/api.js"></script>
     <script src="../js/auth.js"></script>
     <script src="../js/main.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check if user is logged in
-            if (!isLoggedIn()) {
-                window.location.href = 'login.html';
-                return;
-            }
-            
-            // Display user info
-            const user = getCurrentUser();
-            if (user) {
-                document.getElementById('user-email').textContent = user.email;
-            }
-            
-            // Handle save property button
-            document.getElementById('save-property-btn').addEventListener('click', function() {
-                // Implement property saving logic here
-                alert('Fonctionnalité d\'ajout de bien à implémenter dans le backend');
-                // Close modal
-                const modal = bootstrap.Modal.getInstance(document.getElementById('addPropertyModal'));
-                modal.hide();
-            });
-        });
-    </script>
+    <script src="../js/properties.js"></script>
 </body>
 </html>

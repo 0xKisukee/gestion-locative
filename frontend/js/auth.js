@@ -63,8 +63,7 @@ function register(username, email, password) {
 // Logout function
 function logout() {
     // Clear localStorage
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    clearLocalStorage();
 
     // Redirect to home
     window.location.href = '../index.html';
@@ -105,7 +104,7 @@ function showError(message) {
 }
 
 // Initialize auth status when the page loads
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     checkAuthStatus();
 
     // Add logout event listener if the button exists
@@ -114,3 +113,8 @@ document.addEventListener('DOMContentLoaded', function() {
         logoutBtn.addEventListener('click', logout);
     }
 });
+
+export function clearLocalStorage() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+}
