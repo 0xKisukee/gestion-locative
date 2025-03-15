@@ -20,7 +20,7 @@ router.patch(
 );
 
 router.patch(
-    '/setTenant/:propertyId/:tenantId',
+    '/:propertyId/setTenant/:tenantId',
     auth.authenticateJwt,
     propertyController.setTenant,
 );
