@@ -91,7 +91,7 @@ function showPropertyDetails(property) {
     
     // Créer le contenu HTML
     const html = `
-        <div class="row">
+        <div class="row" data-property-id="${property.id}">
             <div class="col-md-6">
                 <h5>${propertyType}</h5>
                 <p><strong>Surface:</strong> ${property.surface} m²</p>
@@ -111,6 +111,30 @@ function showPropertyDetails(property) {
     // Afficher le modal
     const detailsModal = new bootstrap.Modal(document.getElementById('propertyDetailsModal'));
     detailsModal.show();
+}
+
+// Nouvelle fonction pour assigner un locataire
+async function setTenant(propertyId, tenantId) {
+    try {
+        const response = await fetch(`/api/property/${propertyId}/setTenant/${tenantId}`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${getToken()}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Erreur inconnue lors de l\'assignation du locataire');
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Erreur !!! :', error.message);
+        alert('Impossible d\'assigner le locataire. Veuillez réessayer.');
+        throw error;
+    }
 }
 
 // Fonction pour créer une carte de propriété
@@ -335,6 +359,41 @@ function initPage() {
             console.error('Erreur lors de la mise à jour de la propriété:', error);
         }
     });
+
+        // Gérer l'assignation d'un locataire
+        document.getElementById('save-tenant-btn').addEventListener('click', async function() {
+            const form = document.getElementById('set-tenant-form');
+            
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            const propertyId = document.getElementById('set-tenant-property-id').value;
+            const tenantId = document.getElementById('tenant-id').value;
+            
+            try {
+                await setTenant(propertyId, tenantId);
+                
+                // Fermer le modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('setTenantModal'));
+                modal.hide();
+                
+                // Réinitialiser le formulaire
+                form.reset();
+                
+                // Rafraîchir la liste des propriétés
+                initPropertiesPage();
+            } catch (error) {
+                console.error('Erreur lors de l\'assignation du locataire:', error);
+            }
+        });
+        
+        // Gérer le clic sur "Assigner un locataire" dans le modal des détails
+        document.getElementById('assign-tenant-btn').addEventListener('click', function() {
+            const propertyId = document.querySelector('#property-details-content .row').getAttribute('data-property-id');
+            document.getElementById('set-tenant-property-id').value = propertyId;
+        });
 }
 
 // Initialiser la page au chargement du document

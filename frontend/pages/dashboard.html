@@ -10,98 +10,113 @@
 </head>
 <body>
     <div class="container">
-        <header class="py-3 mb-4 border-bottom">
+        <header class="py-3 mb-4 border-bottom shadow-sm">
             <div class="d-flex align-items-center justify-content-between">
-                <h1 class="h4">Gestion Locative</h1>
-                <div id="user-info">
-                    <span id="user-role" class="badge bg-primary me-2"></span>
-                    <span id="user-email" class="me-3"></span>
-                    <button id="logout-btn" class="btn btn-outline-danger">Déconnexion</button>
+                <h1 class="h4 fw-bold text-primary mb-0">Gestion Locative</h1>
+                <div id="user-info" class="d-flex align-items-center">
+                    <span id="user-role" class="badge bg-primary me-2 d-flex align-items-center">Propriétaire</span>
+                    <span id="user-email" class="me-3 text-muted">utilisateur@exemple.com</span>
+                    <button id="logout-btn" class="btn btn-outline-danger btn-sm">Déconnexion</button>
                 </div>
             </div>
         </header>
 
+        <!-- Message de bienvenue -->
         <div class="row mb-4">
             <div class="col-12">
-                <div class="card">
+                <div class="card bg-light border-0 shadow-sm">
                     <div class="card-body">
-                        <h2 class="card-title">Bienvenue sur votre tableau de bord <span id="user-username"></span> !</h2>
-                        <p class="card-text">Vous êtes connecté en tant que <span id="user-role-text"></span>.</p>
+                        <h2 class="card-title fw-bold">Bienvenue, <span id="user-username" class="text-primary">Utilisateur</span> !</h2>
+                        <p class="card-text">Vous êtes connecté en tant que <span id="user-role-text" class="fw-semibold">propriétaire</span>.</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Section pour propriétaires uniquement -->
-        <div id="owner-section" class="d-none">
-            <div class="row mb-4">
-                <div class="col-md-4 mb-3">
-                    <div class="card dashboard-card h-100">
+        <!-- Section Propriétaire -->
+        <div id="owner-section">
+            <div class="row g-4 mb-4">
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm hover-shadow">
                         <div class="card-body text-center">
-                            <i class="bi bi-house-door fs-1 text-primary mb-3"></i>
+                            <i class="bi bi-house-door fs-2 text-primary mb-3"></i>
                             <h5 class="card-title">Mes biens</h5>
-                            <p class="card-text">Consultez et gérez vos biens immobiliers.</p>
-                            <a href="properties.html" class="btn btn-outline-primary">Accéder</a>
+                            <p class="card-text text-muted">Nombre total : <span id="properties-count" class="fw-bold text-primary">3</span></p>
+                            <a href="properties.html" class="btn btn-outline-primary btn-sm mt-2">Gérer</a>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4 mb-3">
-                    <div class="card dashboard-card h-100">
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm hover-shadow">
                         <div class="card-body text-center">
-                            <i class="bi bi-people fs-1 text-success mb-3"></i>
+                            <i class="bi bi-people fs-2 text-success mb-3"></i>
                             <h5 class="card-title">Mes locataires</h5>
-                            <p class="card-text">Consultez la liste de vos locataires et leurs informations.</p>
-                            <a href="tenants.html" class="btn btn-outline-success">Accéder</a>
+                            <p class="card-text text-muted">Actifs : <span id="tenants-count" class="fw-bold text-success">2</span></p>
+                            <a href="tenants.html" class="btn btn-outline-success btn-sm mt-2">Voir la liste</a>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4 mb-3">
-                    <div class="card dashboard-card h-100">
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm hover-shadow">
                         <div class="card-body text-center">
-                            <i class="bi bi-receipt fs-1 text-warning mb-3"></i>
-                            <h5 class="card-title">Mes factures</h5>
-                            <p class="card-text">Gérez vos factures et suivez vos paiements.</p>
-                            <a href="payments.html" class="btn btn-outline-warning">Accéder</a>
+                            <i class="bi bi-receipt fs-2 text-warning mb-3"></i>
+                            <h5 class="card-title">Mes finances</h5>
+                            <p class="card-text text-muted">En attente : <span id="pending-payments" class="fw-bold text-warning">1</span></p>
+                            <a href="payments.html" class="btn btn-outline-warning btn-sm mt-2">Suivi</a>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <div class="card h-100">
-                        <div class="card-header">
-                            Dernières notifications
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                            <span>Dernières notifications</span>
+                            <span class="badge bg-light text-primary" id="notification-count">2</span>
                         </div>
-                        <div class="card-body">
-                            <div id="owner-notifications" class="list-group">
-                                <!-- Les notifications seront chargées dynamiquement -->
+                        <div class="card-body" style="max-height: 300px; overflow-y: auto;">
+                            <div id="owner-notifications" class="list-group list-group-flush">
+                                <div class="list-group-item px-0 py-2 border-bottom">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">15/03/2025</small>
+                                        <span class="badge bg-info text-white">Nouveau</span>
+                                    </div>
+                                    <p class="mb-1">Paiement reçu de Pierre Durand</p>
+                                </div>
+                                <div class="list-group-item px-0 py-2 border-bottom">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">14/03/2025</small>
+                                        <span class="badge bg-warning text-white">À faire</span>
+                                    </div>
+                                    <p class="mb-1">Contrat à renouveler pour l'appartement rue Victor Hugo</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 mb-3">
-                    <div class="card h-100">
-                        <div class="card-header">
-                            Statistiques rapides
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-header bg-info text-white">
+                            Statistiques clés
                         </div>
                         <div class="card-body">
-                            <div class="row text-center">
-                                <div class="col-6 mb-3">
-                                    <h2 id="properties-count" class="text-primary">--</h2>
-                                    <p>Biens en location</p>
-                                </div>
-                                <div class="col-6 mb-3">
-                                    <h2 id="tenants-count" class="text-success">--</h2>
-                                    <p>Locataires actifs</p>
+                            <div class="row text-center g-3">
+                                <div class="col-6">
+                                    <h3 class="text-primary" id="properties-count-stat">3</h3>
+                                    <small class="text-muted">Biens totaux</small>
                                 </div>
                                 <div class="col-6">
-                                    <h2 id="contracts-count" class="text-info">--</h2>
-                                    <p>Contrats à renouveler</p>
+                                    <h3 class="text-success" id="tenants-count-stat">2</h3>
+                                    <small class="text-muted">Locataires</small>
                                 </div>
                                 <div class="col-6">
-                                    <h2 id="pending-payments" class="text-warning">--</h2>
-                                    <p>Paiements en attente</p>
+                                    <h3 class="text-info" id="contracts-count-stat">1</h3>
+                                    <small class="text-muted">Contrats à venir</small>
+                                </div>
+                                <div class="col-6">
+                                    <h3 class="text-warning" id="pending-payments-stat">1</h3>
+                                    <small class="text-muted">Paiements dus</small>
                                 </div>
                             </div>
                         </div>
@@ -110,52 +125,60 @@
             </div>
         </div>
 
-        <!-- Section pour locataires uniquement -->
+        <!-- Section Locataire -->
         <div id="tenant-section" class="d-none">
-            <div class="row mb-4">
-                <div class="col-md-6 mb-3">
-                    <div class="card dashboard-card h-100">
-                        <div class="card-body text-center">
-                            <i class="bi bi-house-door fs-1 text-primary mb-3"></i>
-                            <h5 class="card-title">Mon logement</h5>
-                            <p class="card-text">Consultez les détails de votre location.</p>
-                            <a href="my-rental.html" class="btn btn-outline-primary">Accéder</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <div class="card dashboard-card h-100">
-                        <div class="card-body text-center">
-                            <i class="bi bi-receipt fs-1 text-warning mb-3"></i>
-                            <h5 class="card-title">Mes paiements</h5>
-                            <p class="card-text">Suivez l'historique de vos paiements.</p>
-                            <a href="my-payments.html" class="btn btn-outline-warning">Accéder</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-12 mb-3">
-                    <div class="card h-100">
-                        <div class="card-header">
-                            Informations sur mon logement
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-header bg-primary text-white">
+                            Mon logement
                         </div>
                         <div id="tenant-property-info" class="card-body">
-                            <!-- Les informations seront chargées dynamiquement -->
                             <div class="text-center">
                                 <div class="spinner-border text-primary" role="status">
                                     <span class="visually-hidden">Chargement...</span>
                                 </div>
                             </div>
                         </div>
+                        <div class="card-footer text-center">
+                            <a href="my-rental.html" class="btn btn-outline-primary btn-sm">Plus de détails</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-header bg-warning text-white d-flex justify-content-between align-items-center">
+                            Mes paiements
+                            <span class="badge bg-light text-warning" id="payment-status">À jour</span>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted">Prochain paiement : <span id="next-payment-date">--</span></p>
+                            <p class="text-muted">Montant : <span id="next-payment-amount">-- €</span></p>
+                        </div>
+                        <div class="card-footer text-center">
+                            <a href="my-payments.html" class="btn btn-outline-warning btn-sm">Historique</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-12">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-secondary text-white">
+                            Notifications
+                        </div>
+                        <div class="card-body" style="max-height: 200px; overflow-y: auto;">
+                            <div id="tenant-notifications" class="list-group list-group-flush">
+                                <!-- Chargement dynamique -->
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <footer class="mt-5 py-3 text-center border-top">
-            <p>&copy; 2025 Gestion Locative</p>
+        <footer class="mt-5 py-3 text-center border-top text-muted bg-light">
+            <p class="mb-0">© 2025 Gestion Locative - Tous droits réservés</p>
         </footer>
     </div>
 

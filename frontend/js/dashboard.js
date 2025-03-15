@@ -34,26 +34,39 @@ async function loadOwnerProperties() {
         const properties = await response.json();
         console.log('Propriétés chargées:', properties);
         
-        // Mettre à jour les statistiques
-        document.getElementById('properties-count').textContent = properties.length;
+        // Mettre à jour les statistiques dans les cartes
+        const propertiesCount = document.getElementById('properties-count');
+        const tenantsCount = document.getElementById('tenants-count');
+        const pendingPayments = document.getElementById('pending-payments');
         
-        // Compter les propriétés avec locataires
-        const propertiesWithTenants = properties.filter(prop => prop.tenantId !== null);
-        document.getElementById('tenants-count').textContent = propertiesWithTenants.length;
+        if (propertiesCount) propertiesCount.textContent = properties.length;
+        if (tenantsCount) {
+            const propertiesWithTenants = properties.filter(prop => prop.tenantId !== null);
+            tenantsCount.textContent = propertiesWithTenants.length;
+        }
+        if (pendingPayments) pendingPayments.textContent = '0'; // À adapter avec données réelles
         
-        // Autres statistiques (à personnaliser selon vos besoins)
-        document.getElementById('contracts-count').textContent = '0'; // À adapter
-        document.getElementById('pending-payments').textContent = '0'; // À adapter
+        // Mettre à jour les statistiques dans la section "Statistiques clés"
+        const propertiesCountStat = document.getElementById('properties-count-stat');
+        const tenantsCountStat = document.getElementById('tenants-count-stat');
+        const contractsCountStat = document.getElementById('contracts-count-stat');
+        const pendingPaymentsStat = document.getElementById('pending-payments-stat');
+        
+        if (propertiesCountStat) propertiesCountStat.textContent = properties.length;
+        if (tenantsCountStat) tenantsCountStat.textContent = properties.filter(prop => prop.tenantId !== null).length;
+        if (contractsCountStat) contractsCountStat.textContent = '0'; // À adapter
+        if (pendingPaymentsStat) pendingPaymentsStat.textContent = '0'; // À adapter
         
         return properties;
     } catch (error) {
         console.error('Erreur détaillée:', error);
-        // Afficher un message d'erreur à l'utilisateur
         const ownerSection = document.getElementById('owner-section');
-        const errorMessage = document.createElement('div');
-        errorMessage.className = 'alert alert-danger';
-        errorMessage.innerHTML = `<i class="bi bi-exclamation-triangle"></i> Impossible de charger vos propriétés: ${error.message}`;
-        ownerSection.prepend(errorMessage);
+        if (ownerSection) {
+            const errorMessage = document.createElement('div');
+            errorMessage.className = 'alert alert-danger';
+            errorMessage.innerHTML = `<i class="bi bi-exclamation-triangle"></i> Impossible de charger vos propriétés: ${error.message}`;
+            ownerSection.prepend(errorMessage);
+        }
         return [];
     }
 }
@@ -63,8 +76,7 @@ async function loadTenantRental() {
     try {
         const propertyInfoElement = document.getElementById('tenant-property-info');
         
-        // Tentative de récupération de la propriété louée par le locataire
-        const response = await fetch('/api/tenant/property', {
+        const response = await fetch('/api/user/myProperty', { // Note : vérifiez si c'est bien '/api/tenant/property' dans votre backend
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${getToken()}`,
@@ -78,103 +90,122 @@ async function loadTenantRental() {
                     <i class="bi bi-info-circle"></i> Vous n'avez actuellement aucune location active.
                 </div>
             `;
+            // Mettre à jour les informations de paiement
+            document.getElementById('next-payment-date').textContent = 'N/A';
+            document.getElementById('next-payment-amount').textContent = '0 €';
+            document.getElementById('payment-status').textContent = 'N/A';
             return;
         }
         
         if (!response.ok) {
-            throw new Error('Erreur lors du chargement des informations de location');
+            const errorText = await response.text();
+            throw new Error(`Erreur lors du chargement des informations de location: ${response.status} - ${errorText}`);
         }
         
         const property = await response.json();
+        const propertyType = property.detail === 'apartment' ? 'Appartement' : 'Maison';
         
-        // Afficher les informations de la propriété
         propertyInfoElement.innerHTML = `
-            <div class="row">
-                <div class="col-md-6">
-                    <h5>${property.detail === 'apartment' ? 'Appartement' : 'Maison'}</h5>
-                    <p><i class="bi bi-geo-alt"></i> ${property.address}, ${property.city}</p>
-                    <p><i class="bi bi-rulers"></i> Surface: ${property.surface} m²</p>
-                </div>
-                <div class="col-md-6">
-                    <h5>Informations de location</h5>
-                    <p><i class="bi bi-cash"></i> Loyer mensuel: ${property.rent} €</p>
-                    <p><i class="bi bi-person"></i> Propriétaire: ${property.owner ? property.owner.username : 'Non spécifié'}</p>
-                </div>
-            </div>
+            <h5 class="mb-3">${propertyType}</h5>
+            <p><i class="bi bi-geo-alt"></i> ${property.address}, ${property.city}</p>
+            <p><i class="bi bi-rulers"></i> Surface: ${property.surface} m²</p>
+            <p><i class="bi bi-cash"></i> Loyer: ${property.rent} €</p>
+            <p><i class="bi bi-person"></i> Propriétaire: ${property.owner?.username || 'Non spécifié'}</p>
         `;
+        
+        // Exemple fictif pour les paiements (à remplacer par une API réelle)
+        document.getElementById('next-payment-date').textContent = '20 mars 2025'; // À adapter
+        document.getElementById('next-payment-amount').textContent = `${property.rent} €`;
+        document.getElementById('payment-status').textContent = 'À jour'; // À adapter
     } catch (error) {
-        console.error('Erreur:', error);
-        document.getElementById('tenant-property-info').innerHTML = `
-            <div class="alert alert-danger">
-                <i class="bi bi-exclamation-triangle"></i> Impossible de charger les informations de location.
-            </div>
-        `;
+        console.error('Erreur lors du chargement de la location:', error);
+        const propertyInfoElement = document.getElementById('tenant-property-info');
+        if (propertyInfoElement) {
+            propertyInfoElement.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-triangle"></i> Impossible de charger les informations: ${error.message}
+                </div>
+            `;
+        }
+        // Réinitialiser les champs de paiement en cas d'erreur
+        document.getElementById('next-payment-date').textContent = '--';
+        document.getElementById('next-payment-amount').textContent = '-- €';
+        document.getElementById('payment-status').textContent = 'Erreur';
     }
 }
 
-// Fonction pour générer des notifications factices (à remplacer par des données réelles)
+// Fonction pour générer des notifications factices pour les propriétaires
 function generateOwnerNotifications() {
     const notifications = [
-        {
-            title: 'Paiement reçu',
-            date: 'il y a 3 jours',
-            message: 'Le loyer pour l\'appartement rue de Paris a été reçu.'
-        },
-        {
-            title: 'Contrat à renouveler',
-            date: 'il y a 1 semaine',
-            message: 'Le contrat de location pour l\'appartement rue du Commerce arrive à échéance.'
-        },
-        {
-            title: 'Demande de réparation',
-            date: 'il y a 2 semaines',
-            message: 'Un locataire a signalé un problème de plomberie.'
-        }
+        { title: 'Paiement reçu', date: 'il y a 3 jours', message: 'Le loyer pour l\'appartement rue de Paris a été reçu.' },
+        { title: 'Contrat à renouveler', date: 'il y a 1 semaine', message: 'Le contrat de location pour l\'appartement rue du Commerce arrive à échéance.' },
+        { title: 'Demande de réparation', date: 'il y a 2 semaines', message: 'Un locataire a signalé un problème de plomberie.' }
     ];
     
     const notificationsContainer = document.getElementById('owner-notifications');
-    notificationsContainer.innerHTML = '';
+    if (notificationsContainer) {
+        notificationsContainer.innerHTML = notifications.length === 0 ? '<p class="text-muted">Aucune notification</p>' : '';
+        notifications.forEach(notif => {
+            const notifElement = document.createElement('a');
+            notifElement.href = '#';
+            notifElement.className = 'list-group-item list-group-item-action';
+            notifElement.innerHTML = `
+                <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1">${notif.title}</h6>
+                    <small>${notif.date}</small>
+                </div>
+                <p class="mb-1">${notif.message}</p>
+            `;
+            notificationsContainer.appendChild(notifElement);
+        });
+        document.getElementById('notification-count').textContent = notifications.length;
+    }
+}
+
+// Fonction pour générer des notifications factices pour les locataires
+function generateTenantNotifications() {
+    const notifications = [
+        { title: 'Paiement dû', date: 'dans 5 jours', message: 'Votre loyer est dû le 20 mars.' },
+        { title: 'Entretien prévu', date: 'il y a 2 jours', message: 'Un technicien passera le 18 mars pour une vérification.' }
+    ];
     
-    notifications.forEach(notif => {
-        const notifElement = document.createElement('a');
-        notifElement.href = '#';
-        notifElement.className = 'list-group-item list-group-item-action';
-        notifElement.innerHTML = `
-            <div class="d-flex w-100 justify-content-between">
-                <h6 class="mb-1">${notif.title}</h6>
-                <small>${notif.date}</small>
-            </div>
-            <p class="mb-1">${notif.message}</p>
-        `;
-        notificationsContainer.appendChild(notifElement);
-    });
+    const notificationsContainer = document.getElementById('tenant-notifications');
+    if (notificationsContainer) {
+        notificationsContainer.innerHTML = notifications.length === 0 ? '<p class="text-muted">Aucune notification</p>' : '';
+        notifications.forEach(notif => {
+            const notifElement = document.createElement('a');
+            notifElement.href = '#';
+            notifElement.className = 'list-group-item list-group-item-action';
+            notifElement.innerHTML = `
+                <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1">${notif.title}</h6>
+                    <small>${notif.date}</small>
+                </div>
+                <p class="mb-1">${notif.message}</p>
+            `;
+            notificationsContainer.appendChild(notifElement);
+        });
+    }
 }
 
 // Fonction d'initialisation du tableau de bord
 async function initDashboard() {
-    // Vérifier si l'utilisateur est connecté
     if (!isLoggedIn()) {
         window.location.href = 'login.html';
         return;
     }
     
-    // Récupérer, corriger si nécessaire, et afficher les informations de l'utilisateur
     const user = getCurrentUser();
     console.log("User info après correction:", user);
     
     if (user) {
         document.getElementById('user-email').textContent = user.email;
         document.getElementById('user-username').textContent = user.username || '';
-        
-        // Déterminer le rôle correctement
         const roleDisplay = user.role === 'owner' ? 'Propriétaire' : 'Locataire';
-        const roleLowercase = user.role === 'owner' ? 'propriétaire' : 'locataire';
         
-        // Mettre à jour les éléments d'affichage du rôle
         document.getElementById('user-role').textContent = roleDisplay;
-        document.getElementById('user-role-text').textContent = roleLowercase;
+        document.getElementById('user-role-text').textContent = roleDisplay.toLowerCase();
         
-        // Afficher la section appropriée en fonction du rôle
         if (user.role === 'owner') {
             console.log("Affichage de la section propriétaire");
             document.getElementById('owner-section').classList.remove('d-none');
@@ -186,14 +217,13 @@ async function initDashboard() {
             document.getElementById('tenant-section').classList.remove('d-none');
             document.getElementById('owner-section').classList.add('d-none');
             await loadTenantRental();
+            generateTenantNotifications();
         }
     }
     
-    // Gérer la déconnexion
     document.getElementById('logout-btn').addEventListener('click', function() {
         logout();
     });
 }
 
-// Initialiser le tableau de bord au chargement de la page
 document.addEventListener('DOMContentLoaded', initDashboard);

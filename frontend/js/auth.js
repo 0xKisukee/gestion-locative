@@ -78,19 +78,34 @@ function checkAuthStatus() {
     const userInfo = document.getElementById('user-info');
     const userEmailElement = document.getElementById('user-email');
 
+    // Ne pas rediriger - juste mettre à jour l'interface utilisateur
     if (isLoggedIn()) {
         // User is logged in
         const user = getCurrentUser();
+        
+        // Masquer les boutons d'authentification
         if (authButtons) authButtons.style.display = 'none';
+        
+        // Afficher les informations de l'utilisateur
+        if (userInfo) userInfo.style.display = 'flex';
+        if (userEmailElement) userEmailElement.textContent = user ? user.email : '';
+        
+        // Mise à jour des messages de bienvenue
         if (welcomeConnexion) welcomeConnexion.style.display = 'none';
         if (welcomeMsg) welcomeMsg.style.display = 'block';
         if (userName) userName.textContent = user ? user.username : '';
-        if (userInfo) userInfo.style.display = 'flex';
-        if (userEmailElement) userEmailElement.textContent = user ? user.email : '';
     } else {
         // User is not logged in
+        
+        // Afficher les boutons d'authentification
         if (authButtons) authButtons.style.display = 'block';
+        
+        // Masquer les informations de l'utilisateur
         if (userInfo) userInfo.style.display = 'none';
+        
+        // Mise à jour des messages de bienvenue
+        if (welcomeConnexion) welcomeConnexion.style.display = 'block';
+        if (welcomeMsg) welcomeMsg.style.display = 'none';
     }
 }
 
@@ -105,6 +120,7 @@ function showError(message) {
 
 // Initialize auth status when the page loads
 document.addEventListener('DOMContentLoaded', function () {
+    // Vérifier et mettre à jour l'interface selon l'état de connexion
     checkAuthStatus();
 
     // Add logout event listener if the button exists

@@ -6,66 +6,107 @@
     <title>Créer un compte - Gestion Locative</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
 </head>
 <body>
     <div class="container">
-        <header class="py-3 mb-4 border-bottom">
-            <div class="d-flex align-items-center">
+        <header class="py-3 mb-4 border-bottom shadow-sm">
+            <div class="d-flex align-items-center justify-content-between">
                 <a href="../index.html" class="text-decoration-none">
-                    <h1 class="h4">Gestion Locative</h1>
+                    <h1 class="h4 fw-bold text-primary mb-0">Gestion Locative</h1>
                 </a>
+                <div>
+                    <a href="login.html" class="btn btn-outline-primary btn-hover">Connexion</a>
+                </div>
             </div>
         </header>
 
-        <div class="auth-container">
-            <div class="text-center mb-4">
-                <h2>Créer un compte</h2>
-                <p>Inscrivez-vous pour accéder à l'application</p>
-            </div>
+        <main>
+            <div class="row justify-content-center my-5">
+                <div class="col-md-8 col-lg-6">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body p-4 p-md-5">
+                            <div class="text-center mb-4">
+                                <i class="bi bi-person-plus-fill text-primary fs-1 mb-3"></i>
+                                <h2 class="fw-bold mb-2">Créer un compte</h2>
+                                <p class="text-muted">Rejoignez-nous pour gérer vos locations facilement</p>
+                            </div>
 
-            <div id="error-message" class="alert alert-danger" style="display: none;"></div>
-            <div id="success-message" class="alert alert-success" style="display: none;"></div>
-            
-            <form id="register-form">
-                <div class="mb-3">
-                    <label for="username" class="form-label">Nom d'utilisateur</label>
-                    <input type="text" class="form-control" id="username" name="username" required>
-                </div>
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="email" name="email" required>
-                </div>
-                <div class="mb-3">
-                    <label for="account-type" class="form-label">Type de compte</label>
-                    <select class="form-select" id="account-type" name="role" required>
-                        <option value="">Sélectionner...</option>
-                        <option value="owner">Propriétaire</option>
-                        <option value="tenant">Locataire</option>
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">Mot de passe</label>
-                    <input type="password" class="form-control" id="password" name="password" required>
-                </div>
-                <div class="mb-3">
-                    <label for="confirm-password" class="form-label">Confirmer le mot de passe</label>
-                    <input type="password" class="form-control" id="confirm-password" name="confirm-password" required>
-                </div>
-                <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-primary">S'inscrire</button>
-                </div>
-            </form>
-            
-            <div class="mt-3 text-center">
-                <p>Déjà un compte ? <a href="login.html" class="link-primary">Se connecter</a></p>
-            </div>
-        </div>
+                            <div id="error-message" class="alert alert-danger" style="display: none;"></div>
+                            <div id="success-message" class="alert alert-success" style="display: none;"></div>
+                            
+                            <form id="register-form" class="needs-validation" novalidate>
+                                <div class="mb-3">
+                                    <label for="username" class="form-label">Nom d'utilisateur</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
+                                        <input type="text" class="form-control" id="username" name="username" placeholder="Votre nom d'utilisateur" required>
+                                    </div>
+                                    <div class="invalid-feedback">Veuillez entrer un nom d'utilisateur.</div>
+                                </div>
 
-        <footer class="mt-5 py-3 text-center border-top">
-            <p>&copy; 2025 Gestion Locative</p>
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-envelope"></i></span>
+                                        <input type="email" class="form-control" id="email" name="email" placeholder="nom@exemple.com" required>
+                                    </div>
+                                    <div class="invalid-feedback">Veuillez entrer un email valide.</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="account-type" class="form-label">Type de compte</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-briefcase"></i></span>
+                                        <select class="form-select" id="account-type" name="role" required>
+                                            <option value="">Sélectionner...</option>
+                                            <option value="owner">Propriétaire</option>
+                                            <option value="tenant">Locataire</option>
+                                        </select>
+                                    </div>
+                                    <div class="invalid-feedback">Veuillez choisir un type de compte.</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Mot de passe</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-lock"></i></span>
+                                        <input type="password" class="form-control" id="password" name="password" required>
+                                    </div>
+                                    <div class="invalid-feedback">Veuillez entrer un mot de passe.</div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="confirm-password" class="form-label">Confirmer le mot de passe</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-shield-lock"></i></span>
+                                        <input type="password" class="form-control" id="confirm-password" name="confirm-password" required>
+                                    </div>
+                                    <div class="invalid-feedback">Les mots de passe ne correspondent pas.</div>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary py-2 fw-semibold">
+                                        <i class="bi bi-check-circle me-2"></i>Créer mon compte
+                                    </button>
+                                </div>
+                            </form>
+                            
+                            <div class="mt-4 text-center">
+                                <p class="mb-0 text-muted">Déjà un compte ? <a href="login.html" class="text-primary fw-semibold">Se connecter</a></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="mt-5 py-3 text-center border-top text-muted bg-light">
+            <p class="mb-0">© 2025 Gestion Locative - Tous droits réservés</p>
         </footer>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../js/api.js"></script>
     <script src="../js/auth.js"></script>
     <script>
@@ -73,25 +114,56 @@
             // Check if user is already logged in
             if (isLoggedIn()) {
                 window.location.href = 'dashboard.html';
+                return;
             }
 
-            // Handle register form submission
-            document.getElementById('register-form').addEventListener('submit', function(e) {
+            const form = document.getElementById('register-form');
+            form.addEventListener('submit', function(e) {
                 e.preventDefault();
-                
+
+                // Bootstrap validation
+                if (!form.checkValidity()) {
+                    e.stopPropagation();
+                    form.classList.add('was-validated');
+                    return;
+                }
+
                 const username = document.getElementById('username').value;
                 const email = document.getElementById('email').value;
                 const role = document.getElementById('account-type').value;
                 const password = document.getElementById('password').value;
                 const confirmPassword = document.getElementById('confirm-password').value;
-                
-                // Validate passwords match
+
+                // Custom validation for password match
                 if (password !== confirmPassword) {
-                    showError('Les mots de passe ne correspondent pas.');
+                    document.getElementById('confirm-password').classList.add('is-invalid');
+                    document.querySelector('#confirm-password + .invalid-feedback').textContent = 'Les mots de passe ne correspondent pas.';
                     return;
                 }
-                
+
                 register(username, email, role, password);
+            });
+
+            // Real-time validation for password match
+            document.getElementById('confirm-password').addEventListener('input', function() {
+                const password = document.getElementById('password').value;
+                if (this.value !== password) {
+                    this.classList.add('is-invalid');
+                } else {
+                    this.classList.remove('is-invalid');
+                }
+            });
+
+            // Animations de hover pour les boutons
+            const buttons = document.querySelectorAll('.btn-hover');
+            buttons.forEach(button => {
+                button.addEventListener('mouseenter', function() {
+                    this.classList.add('shadow-sm');
+                });
+                
+                button.addEventListener('mouseleave', function() {
+                    this.classList.remove('shadow-sm');
+                });
             });
         });
     </script>
