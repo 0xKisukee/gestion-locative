@@ -47,12 +47,11 @@ async function updateProperty(userId, propertyId, data) {
 async function getPropertyInfo(userId, propertyId) {
     // Get property informations by id
     const property = await Property.findByPk(propertyId, {
-        attributes: { exclude: ['tenantId'] },
         include: [
             {
                 model: User,
                 as: 'tenant',
-                attributes: { exclude: ['password'] } 
+                attributes: { exclude: ['password'] }
             },
         ],
     });
@@ -65,7 +64,11 @@ async function getPropertyInfo(userId, propertyId) {
     if (userId !== property.ownerId) {
         throw new AppError('You are not the owner of this property', 403);
     } else {
-        return property;
+        // Create JSON object and delete useless parameters
+        const propertyJson = property.toJSON();
+        delete propertyJson.tenantId;
+
+        return propertyJson;
     }
 }
 
@@ -80,17 +83,24 @@ async function getOwnerProperties(userId) {
     // Get all properties of owner
     const properties = await Property.findAll({
         where: { ownerId: userId },
-        attributes: { exclude: ['tenantId', 'ownerId'] },
         include: [
             {
                 model: User,
                 as: 'tenant',
-                attributes: { exclude: ['password'] } 
+                attributes: { exclude: ['password'] }
             },
         ],
     });
 
-    return properties;
+    // Transform each property to delete useless attributes
+    const transformedProperties = properties.map(property => {
+        const propertyJson = property.toJSON();
+        delete propertyJson.ownerId;
+        delete propertyJson.tenantId;
+        return propertyJson;
+    });
+
+    return transformedProperties;
 }
 
 module.exports = {
