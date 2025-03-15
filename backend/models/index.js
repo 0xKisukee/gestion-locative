@@ -8,11 +8,23 @@ User.hasOne(Property, {
   as: 'rentedProperty',
   constraints: false // to verify
 });
-
 // A property can only have one tenant
 Property.belongsTo(User, {
   foreignKey: 'tenantId',
   as: 'tenant',
+  constraints: false // to verify
+});
+
+// An owner can have multiple properties
+User.hasMany(Property, {
+  foreignKey: 'ownerId',
+  as: 'ownedProperties',
+  constraints: false // to verify
+});
+// A property can only have one owner
+Property.belongsTo(User, {
+  foreignKey: 'ownerId',
+  as: 'owner',
   constraints: false // to verify
 });
 

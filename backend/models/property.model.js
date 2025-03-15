@@ -28,6 +28,14 @@ const Property = sequelize.define('Property', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  ownerId: {
+    type: DataTypes.INTEGER,
+    allowNull: false, // null = available
+    references: {
+      model: 'users',
+      key: 'id'
+    }
+  },
   tenantId: {
     type: DataTypes.INTEGER,
     allowNull: true, // null = available
@@ -49,6 +57,39 @@ const Property = sequelize.define('Property', {
 }, {
   tableName: 'properties',
   timestamps: false,
+});
+
+// Verify owner hook at creation
+Property.beforeCreate(async (property) => {
+  const User = require('./user.model'); // Import User here to avoid circular references
+  
+  const owner = await User.findByPk(property.ownerId);
+  if (!owner || owner.role !== 'proprietaire') {
+    throw new Error('Le propriétaire doit avoir le rôle "proprietaire"');
+  }
+  
+  // No tenant verification at creation
+  // Tenant is added in another usecase (updateProperty)
+});
+
+// Verify owner and tenant hook at update
+Property.beforeUpdate(async (property) => {
+  const User = require('./user.model');
+  
+  if (property.changed('ownerId')) {
+    const owner = await User.findByPk(property.ownerId);
+    if (!owner || owner.role !== 'proprietaire') {
+      throw new Error('Le propriétaire doit avoir le rôle "proprietaire"');
+    }
+  }
+  
+  // Vérification du locataire uniquement lors de la mise à jour
+  if (property.changed('tenantId') && property.tenantId) {
+    const tenant = await User.findByPk(property.tenantId);
+    if (!tenant || tenant.role !== 'locataire') {
+      throw new Error('Le locataire doit avoir le rôle "locataire"');
+    }
+  }
 });
 
 module.exports = Property;
