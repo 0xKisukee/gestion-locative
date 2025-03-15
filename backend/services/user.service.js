@@ -54,6 +54,7 @@ async function login(data) {
         token,
         user: {
             userId: user.id,
+            username: user.username,
             email: user.email
         }
     };
