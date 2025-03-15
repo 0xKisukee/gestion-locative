@@ -44,7 +44,7 @@ async function login(data) {
         {
             userId: user.id,
             email: user.email,
-            role: user.role // 'admin' or 'customer'
+            role: user.role // 'owner' or 'tenant'
         },
         process.env.JWT_SECRET,
         { expiresIn: '5m' }
@@ -55,7 +55,8 @@ async function login(data) {
         user: {
             userId: user.id,
             username: user.username,
-            email: user.email
+            email: user.email,
+            role: user.role // MAYBE MOVE THOS RETURN TO JSON DECRYPT ROLE
         }
     };
 }
