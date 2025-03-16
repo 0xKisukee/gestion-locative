@@ -54,123 +54,41 @@
             bien" pour commencer.
         </div>
 
-        <!-- Liste des biens -->
+        <!-- Liste des biens chargés dynamiquement -->
         <div id="properties-container" class="row g-4 mb-4">
-            <!-- Exemple de propriété pour visualisation (sera remplacé par le contenu dynamique) -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 shadow-sm hover-shadow">
-                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                        <span class="badge bg-primary">Appartement</span>
-                        <div>
-                            <button class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal" data-bs-target="#editPropertyModal" data-property-id="1">
-                                <i class="bi bi-pencil"></i>
-                            </button>
-                            <button class="btn btn-sm btn-outline-danger" data-property-id="1">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title fw-semibold">Appartement à Paris</h5>
-                        <p class="card-text">
-                            <i class="bi bi-geo-alt text-muted me-1"></i> 10 rue des Lilas, Paris
-                        </p>
-                        <div class="d-flex justify-content-between mb-2">
-                            <span><i class="bi bi-rulers text-muted me-1"></i> 65 m²</span>
-                            <span class="fw-semibold text-primary">850 € /mois</span>
-                        </div>
-                        <div class="d-flex align-items-center">
-                            <span class="badge bg-success me-2">Occupé</span>
-                            <small class="text-muted">Depuis le 01/01/2025</small>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-white border-top-0">
-                        <button class="btn btn-sm btn-outline-primary w-100" data-bs-toggle="modal" data-bs-target="#propertyDetailsModal" data-property-id="1">
-                            <i class="bi bi-info-circle me-1"></i> Voir les détails
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <!-- Fin exemple -->
         </div>
 
         <!-- Modal détails de propriété -->
-        <div class="modal fade" id="propertyDetailsModal" tabindex="-1" aria-labelledby="propertyDetailsModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
+        <div class="modal fade" id="propertyDetailsModal" tabindex="-1" aria-labelledby="propertyDetailsModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header bg-light">
                         <h5 class="modal-title fw-bold" id="propertyDetailsModalLabel">Détails du bien</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
                     </div>
+
                     <div class="modal-body" id="property-details-content">
-                        <!-- Le contenu sera chargé dynamiquement -->
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h6 class="fw-semibold">Informations générales</h6>
-                                <ul class="list-group list-group-flush mb-4">
-                                    <li class="list-group-item d-flex justify-content-between">
-                                        <span>Type :</span>
-                                        <span class="fw-semibold">Appartement</span>
-                                    </li>
-                                    <li class="list-group-item d-flex justify-content-between">
-                                        <span>Surface :</span>
-                                        <span class="fw-semibold">65 m²</span>
-                                    </li>
-                                    <li class="list-group-item d-flex justify-content-between">
-                                        <span>Loyer :</span>
-                                        <span class="fw-semibold text-primary">850 €/mois</span>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="col-md-6">
-                                <h6 class="fw-semibold">Adresse</h6>
-                                <address class="mb-4">
-                                    10 rue des Lilas<br>
-                                    75011 Paris<br>
-                                    France
-                                </address>
-
-                                <h6 class="fw-semibold">Statut d'occupation</h6>
-                                <div class="d-flex align-items-center mb-2">
-                                    <span class="badge bg-success me-2">Occupé</span>
-                                    <span>Depuis le 01/01/2025</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="border-top my-3 pt-3">
-                            <h6 class="fw-semibold">Informations du locataire</h6>
-                            <div class="card shadow-sm">
-                                <div class="card-body">
-                                    <div class="d-flex align-items-center mb-3">
-                                        <i class="bi bi-person-circle fs-3 me-3 text-primary"></i>
-                                        <div>
-                                            <h5 class="mb-0 fw-semibold">Pierre Durand</h5>
-                                            <small class="text-muted">Locataire depuis le 01/01/2025</small>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <p class="mb-1"><i class="bi bi-envelope me-2"></i> pierre.durand@exemple.com</p>
-                                            <p><i class="bi bi-telephone me-2"></i> 06 12 34 56 78</p>
-                                        </div>
-                                        <div class="col-md-6 text-md-end">
-                                            <span class="badge bg-success p-2">Paiements à jour</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <!-- Contenu chargé dynamiquement -->
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#setTenantModal" id="assign-tenant-btn">
-                            <i class="bi bi-person-plus me-2"></i>Assigner un locataire
-                        </button>
+
+                    <div class="modal-footer justify-content-between">
+                        <div>
+                            <button type="button" class="btn btn-outline-success d-none" data-bs-toggle="modal"
+                                data-bs-target="#setTenantModal" id="edit-tenant-btn">
+                                <i class="bi bi-person-plus me-2"></i>Changer de locataire
+                            </button>
+                            <button type="button" class="btn btn-outline-danger d-none" data-bs-toggle="modal"
+                                data-bs-target="#setTenantModal" id="remove-tenant-btn">
+                                <i class="bi bi-person-dash me-2"></i>Retirer le locataire
+                            </button>
+                        </div>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
                     </div>
                 </div>
             </div>
         </div>
+
 
         <!-- Add Property Modal -->
         <div class="modal fade" id="addPropertyModal" tabindex="-1" aria-labelledby="addPropertyModalLabel"
@@ -228,8 +146,8 @@
                                     <label for="property-rent" class="form-label">Loyer mensuel (€)</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light"><i class="bi bi-cash"></i></span>
-                                        <input type="number" class="form-control" id="property-rent" name="rent" required
-                                            min="1">
+                                        <input type="number" class="form-control" id="property-rent" name="rent"
+                                            required min="1">
                                     </div>
                                 </div>
                             </div>
@@ -273,8 +191,8 @@
                                     <label for="edit-property-surface" class="form-label">Surface (m²)</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light"><i class="bi bi-rulers"></i></span>
-                                        <input type="number" class="form-control" id="edit-property-surface" name="surface"
-                                            required min="1">
+                                        <input type="number" class="form-control" id="edit-property-surface"
+                                            name="surface" required min="1">
                                     </div>
                                 </div>
                             </div>
@@ -284,8 +202,8 @@
                                     <label for="edit-property-address" class="form-label">Adresse</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light"><i class="bi bi-geo-alt"></i></span>
-                                        <input type="text" class="form-control" id="edit-property-address" name="address"
-                                            required>
+                                        <input type="text" class="form-control" id="edit-property-address"
+                                            name="address" required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -310,11 +228,14 @@
                             </div>
                         </form>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                        <button type="button" class="btn btn-primary" id="update-property-btn">
-                            <i class="bi bi-check-circle me-2"></i>Mettre à jour
-                        </button>
+                    <div class="modal-footer d-flex">
+                        <button type="button" class="btn btn-danger" id="delete-property-btn">Supprimer le bien</button>
+                        <div class="ms-auto">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                            <button type="button" class="btn btn-primary" id="update-property-btn">
+                                <i class="bi bi-check-circle me-2"></i>Mettre à jour
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -364,26 +285,26 @@
     <script src="../js/properties.js"></script>
     <script>
         // Animations de hover pour les boutons
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const buttons = document.querySelectorAll('.btn-hover');
             buttons.forEach(button => {
-                button.addEventListener('mouseenter', function() {
+                button.addEventListener('mouseenter', function () {
                     this.classList.add('shadow-sm');
                 });
-                
-                button.addEventListener('mouseleave', function() {
+
+                button.addEventListener('mouseleave', function () {
                     this.classList.remove('shadow-sm');
                 });
             });
-            
+
             // Ajout d'animations pour les cartes de propriétés
             const propertyCards = document.querySelectorAll('.hover-shadow');
             propertyCards.forEach(card => {
-                card.addEventListener('mouseenter', function() {
+                card.addEventListener('mouseenter', function () {
                     this.classList.add('shadow');
                 });
-                
-                card.addEventListener('mouseleave', function() {
+
+                card.addEventListener('mouseleave', function () {
                     this.classList.remove('shadow');
                 });
             });
