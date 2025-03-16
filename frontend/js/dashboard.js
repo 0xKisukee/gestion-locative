@@ -14,7 +14,7 @@ async function loadOwnerDashboard() {
     try {
         console.log('Tentative de chargement des propriétés...');
         console.log('Token utilisé:', getToken());
-        
+
         const response = await fetch('/api/property/getMyProperties', {
             method: 'GET',
             headers: {
@@ -22,41 +22,61 @@ async function loadOwnerDashboard() {
                 'Content-Type': 'application/json'
             }
         });
-        
+
         console.log('Statut de la réponse:', response.status);
-        
+
         if (!response.ok) {
             const errorText = await response.text();
             console.error('Erreur de l\'API:', errorText);
             throw new Error(`Erreur lors du chargement des propriétés: ${response.status} ${response.statusText}`);
         }
-        
+
         const properties = await response.json();
         console.log('Propriétés chargées:', properties);
-        
+
+        // Filtrer les propriétés avec locataires (status rented)
+        const propertiesWithTenants = properties.filter(prop => prop.status === 'rented');
+
         // Mettre à jour les statistiques dans les cartes
         const propertiesCount = document.getElementById('properties-count');
         const tenantsCount = document.getElementById('tenants-count');
         const duePayments = document.getElementById('due-payments');
-        
+
+        // Nombre total de propriétés
         if (propertiesCount) propertiesCount.textContent = properties.length;
+
+        // Nombre de propriétés avec locataires
         if (tenantsCount) {
-            const propertiesWithTenants = properties.filter(prop => prop.status == 'rented');
             tenantsCount.textContent = propertiesWithTenants.length;
         }
+
+        // À adapter avec données réelles des paiements en retard
         if (duePayments) duePayments.textContent = '0'; // À adapter avec données réelles
-        
+
+        // Calcul des statistiques réelles
+        // 1. Revenu mensuel (somme des loyers des biens occupés)
+        const monthlyRevenue = propertiesWithTenants.reduce((sum, prop) => sum + (prop.rent), 0);
+
+        // 2. Revenu potentiel (somme de tous les loyers)
+        const potentialRevenue = properties.reduce((sum, prop) => sum + (prop.rent), 0);
+
+        // 3. Nombre de biens inoccupés
+        const freeProperties = properties.filter(prop => prop.status === 'free').length;
+
+        // 4. Total des impayés dûs
+        const unpaidAmount = 0;
+
         // Mettre à jour les statistiques dans la section "Statistiques clés"
         const monthlyRevenueStat = document.getElementById('monthly-revenue-stat');
         const potentialRevenueStat = document.getElementById('potential-revenue-stat');
         const freePropertiesStat = document.getElementById('free-properties-stat');
-        const openTicketsStat = document.getElementById('open-tickets-stat');
-        
-        if (monthlyRevenueStat) monthlyRevenueStat.textContent = '0'; // À adapter
-        if (potentialRevenueStat) potentialRevenueStat.textContent = '0'; // À adapter
-        if (freePropertiesStat) freePropertiesStat.textContent = '0'; // À adapter
-        if (openTicketsStat) openTicketsStat.textContent = '0'; // À adapter
-        
+        const unpaidAmountStat = document.getElementById('unpaid-amount-stat');
+
+        if (monthlyRevenueStat) monthlyRevenueStat.textContent =  `${monthlyRevenue} €`; // À adapter
+        if (potentialRevenueStat) potentialRevenueStat.textContent = `${potentialRevenue} €`; // À adapter
+        if (freePropertiesStat) freePropertiesStat.textContent = freeProperties; // À adapter
+        if (unpaidAmountStat) unpaidAmountStat.textContent = `${unpaidAmount} €`; // À adapter
+
         return properties;
     } catch (error) {
         console.error('Erreur détaillée:', error);
@@ -75,7 +95,7 @@ async function loadOwnerDashboard() {
 async function loadTenantDashboard() {
     try {
         const propertyInfoElement = document.getElementById('tenant-property-info');
-        
+
         const response = await fetch('/api/user/myProperty', {
             method: 'GET',
             headers: {
@@ -83,7 +103,7 @@ async function loadTenantDashboard() {
                 'Content-Type': 'application/json'
             }
         });
-        
+
         if (response.status === 404) {
             propertyInfoElement.innerHTML = `
                 <div class="alert alert-info">
@@ -96,15 +116,15 @@ async function loadTenantDashboard() {
             document.getElementById('payment-status').textContent = 'À jour';
             return;
         }
-        
+
         if (!response.ok) {
             const errorText = await response.text();
             throw new Error(`Erreur lors du chargement des informations de location: ${response.status} - ${errorText}`);
         }
-        
+
         const property = await response.json();
         const propertyType = property.detail === 'apartment' ? 'Appartement' : 'Maison';
-        
+
         propertyInfoElement.innerHTML = `
             <h5 class="mb-3">${propertyType}</h5>
             <p><i class="bi bi-geo-alt"></i> ${property.address}, ${property.city}</p>
@@ -112,7 +132,7 @@ async function loadTenantDashboard() {
             <p><i class="bi bi-cash"></i> Loyer: ${property.rent} €</p>
             <p><i class="bi bi-person"></i> Propriétaire: ${property.owner?.username || 'Non spécifié'}</p>
         `;
-        
+
         // Exemple fictif pour les paiements (à remplacer par une API réelle)
         document.getElementById('next-payment-date').textContent = '20 mars 2025'; // À adapter
         document.getElementById('next-payment-amount').textContent = `${property.rent} €`; // OK
@@ -142,7 +162,7 @@ function generateOwnerTickets() {
         { title: 'Contrat à renouveler', date: 'il y a 1 semaine', message: 'Le contrat de location pour l\'appartement rue du Commerce arrive à échéance.' },
         { title: 'Demande de réparation', date: 'il y a 2 semaines', message: 'Un locataire a signalé un problème de plomberie.' }
     ];
-    
+
     const ticketsContainer = document.getElementById('owner-tickets');
     if (ticketsContainer) {
         ticketsContainer.innerHTML = tickets.length === 0 ? '<p class="text-muted">Aucun ticket</p>' : '';
@@ -169,7 +189,7 @@ function generateTenantTickets() {
         { title: 'Paiement dû', date: 'dans 5 jours', message: 'Votre loyer est dû le 20 mars.' },
         { title: 'Entretien prévu', date: 'il y a 2 jours', message: 'Un technicien passera le 18 mars pour une vérification.' }
     ];
-    
+
     const ticketsContainer = document.getElementById('tenant-tickets');
     if (ticketsContainer) {
         ticketsContainer.innerHTML = tickets.length === 0 ? '<p class="text-muted">Aucun ticket</p>' : '';
@@ -195,18 +215,18 @@ async function initDashboard() {
         window.location.href = 'login.html';
         return;
     }
-    
+
     const user = getCurrentUser();
     console.log("User info après correction:", user);
-    
+
     if (user) {
         document.getElementById('user-email').textContent = user.email;
         document.getElementById('user-username').textContent = user.username || '';
         const roleDisplay = user.role === 'owner' ? 'Propriétaire' : 'Locataire';
-        
+
         document.getElementById('user-role').textContent = roleDisplay;
         document.getElementById('user-role-text').textContent = roleDisplay.toLowerCase();
-        
+
         if (user.role === 'owner') {
             console.log("Affichage de la section propriétaire");
             document.getElementById('owner-section').classList.remove('d-none');
@@ -221,8 +241,8 @@ async function initDashboard() {
             generateTenantTickets();
         }
     }
-    
-    document.getElementById('logout-btn').addEventListener('click', function() {
+
+    document.getElementById('logout-btn').addEventListener('click', function () {
         logout();
     });
 }
