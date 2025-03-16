@@ -131,6 +131,10 @@ async function getOwnerProperties(userId) {
 }
 
 async function getPropertyByTenantId(userId) {
+    // If userId is null, return (used to remove tenant from property)
+    if (userId === null) {
+        return false;
+    }
     // Verfy that user has "tenant" role
     const tenant = await User.findByPk(userId);
     if (!tenant || tenant.role !== "tenant") {
