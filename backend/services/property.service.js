@@ -143,6 +143,10 @@ async function getPropertyByTenantId(userId) {
         }]
     });
 
+    if (!property) {
+        throw new AppError('Property not found', 404);
+    }
+
     return property;
 }
 
