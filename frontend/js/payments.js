@@ -1,24 +1,18 @@
-// payments.js
-
-// Fonctions utilitaires importées depuis auth.js (assumées disponibles)
+// Fonction pour obtenir le token d'authentification
 function getToken() {
     return localStorage.getItem('token');
 }
 
+// Récupérer l'utilisateur courant depuis localStorage
 function getCurrentUser() {
     const userJson = localStorage.getItem('user');
     return userJson ? JSON.parse(userJson) : null;
 }
 
-function isLoggedIn() {
-    return !!getToken();
-}
-
-// Charger les données des paiements pour un propriétaire
+// Charger les paiements pour un propriétaire
 async function loadOwnerPayments() {
     try {
-        // Récupérer les propriétés du propriétaire
-        const propertiesResponse = await fetch('/api/property/getMyProperties', {
+        const response = await fetch('/api/user/myPayments', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${getToken()}`,
@@ -26,225 +20,198 @@ async function loadOwnerPayments() {
             }
         });
 
-        if (!propertiesResponse.ok) {
-            throw new Error(`Erreur lors du chargement des propriétés: ${propertiesResponse.status}`);
+        if (!response.ok) {
+            throw new Error(`Erreur lors du chargement des paiements: ${response.status}`);
         }
-        const properties = await propertiesResponse.json();
 
-        // Récupérer tous les paiements liés aux propriétés
-        const paymentsResponse = await fetch('/api/user/myPayments', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${getToken()}`,
-                'Content-Type': 'application/json'
-            }
-        });
+        const payments = await response.json();
 
-        if (!paymentsResponse.ok) {
-            throw new Error(`Erreur lors du chargement des paiements: ${paymentsResponse.status}`);
+        // Calcul des statistiques
+        const totalRent = payments.reduce((sum, payment) => sum + payment.amount, 0);
+        const paidAmount = payments
+            .filter(payment => payment.isPaid)
+            .reduce((sum, payment) => sum + payment.amount, 0);
+        const pendingAmount = totalRent - paidAmount;
+
+        document.getElementById('total-rent').textContent = `${totalRent.toFixed(2)} €`;
+        document.getElementById('paid-amount').textContent = `${paidAmount.toFixed(2)} €`;
+        document.getElementById('pending-amount').textContent = `${pendingAmount.toFixed(2)} €`;
+
+        // Remplir le tableau des paiements
+        const tableBody = document.getElementById('owner-payments-table-body');
+        tableBody.innerHTML = '';
+
+        if (payments.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="7" class="text-center">Aucun paiement trouvé.</td></tr>';
+        } else {
+            payments.forEach(payment => {
+                const statusClass = payment.status === 'paid' ? 'bg-success' : payment.status === 'due' ? 'bg-danger' : 'bg-warning';
+                const statusText = payment.status === 'paid' ? 'Payé' : payment.status === 'due' ? 'En retard' : 'À venir';
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${payment.id}</td>
+                    <td>${new Date(payment.dueDate).toLocaleDateString('fr-FR')}</td>
+                    <td>${payment.paymentTenant?.username || 'N/A'}</td>
+                    <td>${payment.property?.address || 'N/A'}</td>
+                    <td>${payment.amount.toFixed(2)} €</td>
+                    <td>
+                        <span class="badge ${statusClass}">
+                            ${statusText}
+                        </span>
+                    </td>
+                    <td>
+                        ${payment.status !== 'paid' ? `<button class="btn btn-sm btn-primary record-payment-btn" data-payment-id="${payment.id}">Marquer comme payé</button>` : ''}
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            // Ajouter des listeners pour les boutons "Marquer comme payé"
+            document.querySelectorAll('.record-payment-btn').forEach(button => {
+                button.addEventListener('click', async () => {
+                    const paymentId = button.getAttribute('data-payment-id');
+                    await recordPayment(paymentId);
+                    await loadOwnerPayments(); // Recharger les données après mise à jour
+                });
+            });
         }
-        const payments = await paymentsResponse.json();
-
-        // Afficher les statistiques
-        displayPaymentStats(payments);
-
-        // Afficher les paiements dans le tableau
-        displayPaymentsTable(payments, properties);
-
     } catch (error) {
-        console.error('Erreur lors du chargement des paiements:', error);
-        const tableBody = document.getElementById('payments-table-body');
-        tableBody.innerHTML = `
-            <tr>
-                <td colspan="7" class="text-center text-danger">
-                    <i class="bi bi-exclamation-triangle"></i> Erreur: ${error.message}
-                </td>
-            </tr>
+        console.error('Erreur:', error);
+        document.getElementById('owner-payments-table-body').innerHTML = `
+            <tr><td colspan="7" class="text-center text-danger">Erreur: ${error.message}</td></tr>
         `;
     }
 }
 
-// Afficher les statistiques des paiements
-function displayPaymentStats(payments) {
-    const totalRent = payments.reduce((sum, p) => sum + p.amount, 0);
-    const paidAmount = payments.filter(p => p.status === 'paid').reduce((sum, p) => sum + p.amount, 0);
-    const pendingAmount = totalRent - paidAmount;
-
-    document.getElementById('total-rent').textContent = `${totalRent.toFixed(2)} €`;
-    document.getElementById('paid-amount').textContent = `${paidAmount.toFixed(2)} €`;
-    document.getElementById('pending-amount').textContent = `${pendingAmount.toFixed(2)} €`;
-}
-
-// Afficher les paiements dans le tableau
-function displayPaymentsTable(payments, properties) {
-    const tableBody = document.getElementById('payments-table-body');
-    tableBody.innerHTML = ''; // Vider le tableau
-
-    if (payments.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Aucun paiement trouvé</td></tr>';
-        return;
-    }
-
-    const userId = getCurrentUser().userId;
-
-    payments.forEach(payment => {
-        const property = properties.find(p => p.tenant.id === payment.tenantId) || {};
-        const tenantName = property.tenant?.username || 'Inconnu';
-        const propertyName = property.address ? `${property.address}, ${property.city}` : 'Inconnu';
-
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>RENT-${payment.id.toString().padStart(6, '0')}</td>
-            <td>${new Date(payment.dueDate).toLocaleDateString('fr-FR')}</td>
-            <td>${tenantName}</td>
-            <td>${propertyName}</td>
-            <td>${payment.amount.toFixed(2)} €</td>
-            <td>
-                <span class="badge ${getStatusClass(payment.status)}">
-                    ${formatStatus(payment.status)}
-                </span>
-            </td>
-            <td>
-                <div class="btn-group">
-                    <button class="btn btn-sm btn-outline-primary" title="Détails"><i class="bi bi-file-text"></i></button>
-                    <button class="btn btn-sm btn-outline-secondary" title="Envoyer rappel"><i class="bi bi-envelope"></i></button>
-                    ${payment.status !== 'paid' ? '<button class="btn btn-sm btn-outline-success mark-paid-btn" data-payment-id="' + payment.id + '" title="Marquer comme payé"><i class="bi bi-check-circle"></i></button>' : ''}
-                </div>
-            </td>
-        `;
-        tableBody.appendChild(row);
-    });
-
-    // Ajouter des écouteurs pour "Marquer comme payé"
-    document.querySelectorAll('.mark-paid-btn').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-            const paymentId = e.target.closest('button').dataset.paymentId;
-            await markPaymentAsPaid(paymentId);
+// Charger les paiements pour un locataire
+async function loadTenantPayments() {
+    try {
+        const response = await fetch('/api/user/myPayments', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${getToken()}`,
+                'Content-Type': 'application/json'
+            }
         });
-    });
-}
 
-// Formatter le statut pour l'affichage
-function formatStatus(status) {
-    switch (status) {
-        case 'paid': return 'Payé';
-        case 'due': return 'En retard';
-        case 'incoming': return 'En attente';
-        default: return 'Inconnu';
+        if (!response.ok) {
+            throw new Error(`Erreur lors du chargement des paiements: ${response.status}`);
+        }
+
+        const payments = await response.json();
+
+        // Trouver le prochain paiement non payé
+        const nextPayment = payments.find(payment => !payment.isPaid);
+        document.getElementById('next-payment-date').textContent = nextPayment
+            ? new Date(nextPayment.dueDate).toLocaleDateString('fr-FR')
+            : '--';
+        document.getElementById('next-payment-amount').textContent = nextPayment
+            ? `${nextPayment.amount.toFixed(2)} €`
+            : '-- €';
+        document.getElementById('payment-status').textContent = nextPayment
+            ? (nextPayment.status === 'due' ? 'En retard' : 'À venir')
+            : 'À jour';
+
+        // Calcul des statistiques
+        const paidAmount = payments
+            .filter(payment => payment.isPaid)
+            .reduce((sum, payment) => sum + payment.amount, 0);
+        const pendingAmount = payments
+            .filter(payment => !payment.isPaid)
+            .reduce((sum, payment) => sum + payment.amount, 0);
+
+        document.getElementById('tenant-paid-amount').textContent = `${paidAmount.toFixed(2)} €`;
+        document.getElementById('tenant-pending-amount').textContent = `${pendingAmount.toFixed(2)} €`;
+
+        // Remplir le tableau des paiements
+        const tableBody = document.getElementById('tenant-payments-table-body');
+        tableBody.innerHTML = '';
+
+        if (payments.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="5" class="text-center">Aucun paiement trouvé.</td></tr>';
+        } else {
+            payments.forEach(payment => {
+                const statusClass = payment.status === 'paid' ? 'bg-success' : payment.status === 'due' ? 'bg-danger' : 'bg-warning';
+                const statusText = payment.status === 'paid' ? 'Payé' : payment.status === 'due' ? 'En retard' : 'À venir';
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${payment.id}</td>
+                    <td>${new Date(payment.dueDate).toLocaleDateString('fr-FR')}</td>
+                    <td>${payment.property?.address || 'N/A'}</td>
+                    <td>${payment.amount.toFixed(2)} €</td>
+                    <td>
+                        <span class="badge ${statusClass}">
+                            ${statusText}
+                        </span>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+    } catch (error) {
+        console.error('Erreur:', error);
+        document.getElementById('tenant-payments-table-body').innerHTML = `
+            <tr><td colspan="5" class="text-center text-danger">Erreur: ${error.message}</td></tr>
+        `;
     }
 }
 
-// Obtenir la classe Bootstrap pour le statut
-function getStatusClass(status) {
-    switch (status) {
-        case 'paid': return 'bg-success';
-        case 'due': return 'bg-danger';
-        case 'incoming': return 'bg-warning';
-        default: return 'bg-secondary';
-    }
-}
-
-// Marquer un paiement comme payé
-async function markPaymentAsPaid(paymentId) {
+// Enregistrer un paiement (pour les propriétaires uniquement)
+async function recordPayment(paymentId) {
     try {
         const response = await fetch(`/api/user/recordPayment/${paymentId}`, {
             method: 'PATCH',
             headers: {
                 'Authorization': `Bearer ${getToken()}`,
                 'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ paidDate: new Date().toISOString() })
+            }
         });
 
         if (!response.ok) {
-            throw new Error('Erreur lors de la mise à jour du paiement');
+            throw new Error('Erreur lors de l\'enregistrement du paiement');
         }
 
-        await loadOwnerPayments(); // Recharger les données
+        alert('Paiement marqué comme payé avec succès !');
     } catch (error) {
         console.error('Erreur:', error);
-        alert('Impossible de marquer le paiement comme payé');
-    }
-}
-
-// Gérer l'enregistrement d'un nouveau paiement
-async function savePayment() {
-    const form = document.getElementById('add-payment-form');
-    const tenant = form.querySelector('#payment-tenant').value;
-    const propertyId = form.querySelector('#payment-property').value;
-    const amount = parseFloat(form.querySelector('#payment-amount').value);
-    const paidDate = form.querySelector('#payment-date').value;
-    const method = form.querySelector('#payment-method').value;
-    const notes = form.querySelector('#payment-notes').value;
-
-    if (!tenant || !propertyId || !amount || !paidDate || !method) {
-        alert('Veuillez remplir tous les champs obligatoires');
-        return;
-    }
-
-    try {
-        const response = await fetch('/api/user/myPayments', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${getToken()}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                propertyId,
-                amount,
-                dueDate: new Date(paidDate).toISOString(), // Simplification, ajuster si nécessaire
-                tenantId: tenant, // Suppose que tenant est l'ID ici
-                paidDate: new Date(paidDate).toISOString(),
-                paymentMethod: method,
-                notes
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error('Erreur lors de l’enregistrement du paiement');
-        }
-
-        const modal = bootstrap.Modal.getInstance(document.getElementById('addPaymentModal'));
-        modal.hide();
-        await loadOwnerPayments(); // Recharger les données
-    } catch (error) {
-        console.error('Erreur:', error);
-        alert('Erreur lors de l’enregistrement du paiement');
+        alert('Erreur: ' + error.message);
     }
 }
 
 // Initialisation de la page
 async function initPaymentsPage() {
-    if (!isLoggedIn()) {
+    const user = getCurrentUser();
+
+    if (!user) {
         window.location.href = 'login.html';
         return;
     }
 
-    const user = getCurrentUser();
-    if (user) {
-        document.getElementById('user-email').textContent = user.email;
-        document.getElementById('user-role').textContent = user.role === 'owner' ? 'Propriétaire' : 'Locataire';
-    }
+    // Mettre à jour l'en-tête
+    document.getElementById('user-email').textContent = user.email;
+    const roleDisplay = user.role === 'owner' ? 'Propriétaire' : 'Locataire';
+    document.getElementById('user-role').textContent = roleDisplay;
 
+    // Afficher la section appropriée
     if (user.role === 'owner') {
+        document.getElementById('owner-payments-section').classList.remove('d-none');
+        document.getElementById('tenant-payments-section').classList.add('d-none');
         await loadOwnerPayments();
-
-        // Gérer le bouton "Enregistrer" du modal
-        document.getElementById('save-payment-btn').addEventListener('click', savePayment);
-
-        // Bouton de déconnexion
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            logout(); // Fonction assumée dans auth.js
-        });
+    } else if (user.role === 'tenant') {
+        document.getElementById('tenant-payments-section').classList.remove('d-none');
+        document.getElementById('owner-payments-section').classList.add('d-none');
+        await loadTenantPayments();
     } else {
-        // Rediriger ou afficher un message pour les locataires
-        document.querySelector('.container').innerHTML = `
-            <div class="alert alert-info">
-                <i class="bi bi-info-circle"></i> Cette page est réservée aux propriétaires.
-            </div>
-        `;
+        // Gestion des rôles non autorisés
+        document.body.innerHTML = '<div class="alert alert-danger">Rôle non autorisé pour cette page.</div>';
     }
+
+    // Gestion de la déconnexion
+    document.getElementById('logout-btn').addEventListener('click', function () {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = 'login.html';
+    });
 }
 
-// Lancer l'initialisation au chargement de la page
 document.addEventListener('DOMContentLoaded', initPaymentsPage);
