@@ -21,7 +21,7 @@ const Payment = sequelize.define('Payment', {
   },
   tenantId: {
     type: DataTypes.INTEGER,
-    allowNull: true,
+    allowNull: false,
     references: {
       model: 'users',
       key: 'id'
@@ -29,9 +29,17 @@ const Payment = sequelize.define('Payment', {
   },
   ownerId: {
     type: DataTypes.INTEGER,
-    allowNull: true,
+    allowNull: false,
     references: {
       model: 'users',
+      key: 'id'
+    }
+  },
+  propertyId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'properties',
       key: 'id'
     }
   },

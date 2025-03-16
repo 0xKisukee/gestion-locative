@@ -2,6 +2,7 @@ require('dotenv').config();
 const { User, Property, Payment } = require("../models");
 const { Op } = require('sequelize');
 const { AppError } = require('../middlewares/errorHandler');
+const userService = require('./user.service.js');
 
 function getEndOfMonth(date) {
     const inputDate = new Date(date);
@@ -52,6 +53,7 @@ async function initRent(propertyId, entryDate) {
         dueDate: getEndOfMonth(entryDate),
         tenantId: property.tenantId,
         ownerId: property.ownerId,
+        propertyId: property.id,
     });
 
     return payment;
@@ -81,6 +83,7 @@ async function createRentsLoop() {
                 dueDate: getEndOfMonth(actualDate),
                 tenantId: property.tenantId,
                 ownerId: property.ownerId,
+                propertyId: property.id,
             }, { transaction });
         })
     );
@@ -109,6 +112,11 @@ async function getOwnerPayments(userId) {
                 as: 'paymentTenant',
                 attributes: { exclude: ['password'] }
             },
+            {
+                model: Property,
+                as: 'paymentProperty',
+                attributes: ['address', 'city']
+            }
         ],
     });
 
@@ -132,6 +140,11 @@ async function getTenantPayments(userId) {
                 as: 'paymentOwner',
                 attributes: { exclude: ['password'] }
             },
+            {
+                model: Property,
+                as: 'paymentProperty',
+                attributes: ['address', 'city']
+            }
         ],
     });
 

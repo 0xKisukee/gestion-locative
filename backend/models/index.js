@@ -55,6 +55,19 @@ Payment.belongsTo(User, {
   constraints: false // to verify
 });
 
+// A property can have multiple payments
+Property.hasMany(Payment, {
+  foreignKey: 'propertyId',
+  as: 'propertyPayments',
+  constraints: false // to verify
+});
+// A payment belongs to one property
+Payment.belongsTo(Property, {
+  foreignKey: 'propertyId',
+  as: 'paymentProperty',
+  constraints: false // to verify
+});
+
 // Export all models
 module.exports = {
   User,
