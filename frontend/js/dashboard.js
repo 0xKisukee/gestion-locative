@@ -9,8 +9,8 @@ function getCurrentUser() {
     return userJson ? JSON.parse(userJson) : null;
 }
 
-// Fonction pour charger les propriétés d'un propriétaire
-async function loadOwnerProperties() {
+// Fonction pour charger le dashboard d'un propriétaire
+async function loadOwnerDashboard() {
     try {
         console.log('Tentative de chargement des propriétés...');
         console.log('Token utilisé:', getToken());
@@ -37,25 +37,25 @@ async function loadOwnerProperties() {
         // Mettre à jour les statistiques dans les cartes
         const propertiesCount = document.getElementById('properties-count');
         const tenantsCount = document.getElementById('tenants-count');
-        const pendingPayments = document.getElementById('pending-payments');
+        const duePayments = document.getElementById('due-payments');
         
         if (propertiesCount) propertiesCount.textContent = properties.length;
         if (tenantsCount) {
-            const propertiesWithTenants = properties.filter(prop => prop.tenantId !== null);
+            const propertiesWithTenants = properties.filter(prop => prop.status == 'rented');
             tenantsCount.textContent = propertiesWithTenants.length;
         }
-        if (pendingPayments) pendingPayments.textContent = '0'; // À adapter avec données réelles
+        if (duePayments) duePayments.textContent = '0'; // À adapter avec données réelles
         
         // Mettre à jour les statistiques dans la section "Statistiques clés"
-        const propertiesCountStat = document.getElementById('properties-count-stat');
-        const tenantsCountStat = document.getElementById('tenants-count-stat');
-        const contractsCountStat = document.getElementById('contracts-count-stat');
-        const pendingPaymentsStat = document.getElementById('pending-payments-stat');
+        const monthlyRevenueStat = document.getElementById('monthly-revenue-stat');
+        const potentialRevenueStat = document.getElementById('potential-revenue-stat');
+        const freePropertiesStat = document.getElementById('free-properties-stat');
+        const openTicketsStat = document.getElementById('open-tickets-stat');
         
-        if (propertiesCountStat) propertiesCountStat.textContent = properties.length;
-        if (tenantsCountStat) tenantsCountStat.textContent = properties.filter(prop => prop.tenantId !== null).length;
-        if (contractsCountStat) contractsCountStat.textContent = '0'; // À adapter
-        if (pendingPaymentsStat) pendingPaymentsStat.textContent = '0'; // À adapter
+        if (monthlyRevenueStat) monthlyRevenueStat.textContent = '0'; // À adapter
+        if (potentialRevenueStat) potentialRevenueStat.textContent = '0'; // À adapter
+        if (freePropertiesStat) freePropertiesStat.textContent = '0'; // À adapter
+        if (openTicketsStat) openTicketsStat.textContent = '0'; // À adapter
         
         return properties;
     } catch (error) {
@@ -71,12 +71,12 @@ async function loadOwnerProperties() {
     }
 }
 
-// Fonction pour charger les informations de location d'un locataire
-async function loadTenantRental() {
+// Fonction pour charger le dashboard d'un locataire
+async function loadTenantDashboard() {
     try {
         const propertyInfoElement = document.getElementById('tenant-property-info');
         
-        const response = await fetch('/api/user/myProperty', { // Note : vérifiez si c'est bien '/api/tenant/property' dans votre backend
+        const response = await fetch('/api/user/myProperty', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${getToken()}`,
@@ -91,9 +91,9 @@ async function loadTenantRental() {
                 </div>
             `;
             // Mettre à jour les informations de paiement
-            document.getElementById('next-payment-date').textContent = 'N/A';
-            document.getElementById('next-payment-amount').textContent = '0 €';
-            document.getElementById('payment-status').textContent = 'N/A';
+            document.getElementById('next-payment-date').textContent = '--';
+            document.getElementById('next-payment-amount').textContent = '-- €';
+            document.getElementById('payment-status').textContent = 'À jour';
             return;
         }
         
@@ -115,7 +115,7 @@ async function loadTenantRental() {
         
         // Exemple fictif pour les paiements (à remplacer par une API réelle)
         document.getElementById('next-payment-date').textContent = '20 mars 2025'; // À adapter
-        document.getElementById('next-payment-amount').textContent = `${property.rent} €`;
+        document.getElementById('next-payment-amount').textContent = `${property.rent} €`; // OK
         document.getElementById('payment-status').textContent = 'À jour'; // À adapter
     } catch (error) {
         console.error('Erreur lors du chargement de la location:', error);
@@ -134,56 +134,57 @@ async function loadTenantRental() {
     }
 }
 
-// Fonction pour générer des notifications factices pour les propriétaires
-function generateOwnerNotifications() {
-    const notifications = [
+// Fonction pour générer les tickets
+function generateOwnerTickets() {
+    // fake tickets for tests
+    const tickets = [
         { title: 'Paiement reçu', date: 'il y a 3 jours', message: 'Le loyer pour l\'appartement rue de Paris a été reçu.' },
         { title: 'Contrat à renouveler', date: 'il y a 1 semaine', message: 'Le contrat de location pour l\'appartement rue du Commerce arrive à échéance.' },
         { title: 'Demande de réparation', date: 'il y a 2 semaines', message: 'Un locataire a signalé un problème de plomberie.' }
     ];
     
-    const notificationsContainer = document.getElementById('owner-notifications');
-    if (notificationsContainer) {
-        notificationsContainer.innerHTML = notifications.length === 0 ? '<p class="text-muted">Aucune notification</p>' : '';
-        notifications.forEach(notif => {
-            const notifElement = document.createElement('a');
-            notifElement.href = '#';
-            notifElement.className = 'list-group-item list-group-item-action';
-            notifElement.innerHTML = `
+    const ticketsContainer = document.getElementById('owner-tickets');
+    if (ticketsContainer) {
+        ticketsContainer.innerHTML = tickets.length === 0 ? '<p class="text-muted">Aucun ticket</p>' : '';
+        tickets.forEach(tickt => {
+            const ticktElement = document.createElement('a');
+            ticktElement.href = '#';
+            ticktElement.className = 'list-group-item list-group-item-action';
+            ticktElement.innerHTML = `
                 <div class="d-flex w-100 justify-content-between">
-                    <h6 class="mb-1">${notif.title}</h6>
-                    <small>${notif.date}</small>
+                    <h6 class="mb-1">${tickt.title}</h6>
+                    <small>${tickt.date}</small>
                 </div>
-                <p class="mb-1">${notif.message}</p>
+                <p class="mb-1">${tickt.message}</p>
             `;
-            notificationsContainer.appendChild(notifElement);
+            ticketsContainer.appendChild(ticktElement);
         });
-        document.getElementById('notification-count').textContent = notifications.length;
+        document.getElementById('ticket-count').textContent = tickets.length;
     }
 }
 
-// Fonction pour générer des notifications factices pour les locataires
-function generateTenantNotifications() {
-    const notifications = [
+// Fonction pour générer des tickets factices pour les locataires
+function generateTenantTickets() {
+    const tickets = [
         { title: 'Paiement dû', date: 'dans 5 jours', message: 'Votre loyer est dû le 20 mars.' },
         { title: 'Entretien prévu', date: 'il y a 2 jours', message: 'Un technicien passera le 18 mars pour une vérification.' }
     ];
     
-    const notificationsContainer = document.getElementById('tenant-notifications');
-    if (notificationsContainer) {
-        notificationsContainer.innerHTML = notifications.length === 0 ? '<p class="text-muted">Aucune notification</p>' : '';
-        notifications.forEach(notif => {
-            const notifElement = document.createElement('a');
-            notifElement.href = '#';
-            notifElement.className = 'list-group-item list-group-item-action';
-            notifElement.innerHTML = `
+    const ticketsContainer = document.getElementById('tenant-tickets');
+    if (ticketsContainer) {
+        ticketsContainer.innerHTML = tickets.length === 0 ? '<p class="text-muted">Aucun ticket</p>' : '';
+        tickets.forEach(tickt => {
+            const ticktElement = document.createElement('a');
+            ticktElement.href = '#';
+            ticktElement.className = 'list-group-item list-group-item-action';
+            ticktElement.innerHTML = `
                 <div class="d-flex w-100 justify-content-between">
-                    <h6 class="mb-1">${notif.title}</h6>
-                    <small>${notif.date}</small>
+                    <h6 class="mb-1">${tickt.title}</h6>
+                    <small>${tickt.date}</small>
                 </div>
-                <p class="mb-1">${notif.message}</p>
+                <p class="mb-1">${tickt.message}</p>
             `;
-            notificationsContainer.appendChild(notifElement);
+            ticketsContainer.appendChild(ticktElement);
         });
     }
 }
@@ -210,14 +211,14 @@ async function initDashboard() {
             console.log("Affichage de la section propriétaire");
             document.getElementById('owner-section').classList.remove('d-none');
             document.getElementById('tenant-section').classList.add('d-none');
-            await loadOwnerProperties();
-            generateOwnerNotifications();
+            await loadOwnerDashboard();
+            generateOwnerTickets();
         } else {
             console.log("Affichage de la section locataire");
             document.getElementById('tenant-section').classList.remove('d-none');
             document.getElementById('owner-section').classList.add('d-none');
-            await loadTenantRental();
-            generateTenantNotifications();
+            await loadTenantDashboard();
+            generateTenantTickets();
         }
     }
     
