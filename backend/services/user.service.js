@@ -47,7 +47,7 @@ async function login(data) {
             role: user.role // 'owner' or 'tenant'
         },
         process.env.JWT_SECRET,
-        { expiresIn: '5m' }
+        { expiresIn: '1h' }
     );
 
     return {
