@@ -38,7 +38,8 @@ async function setTenant(req, res, next) {
     try {
         // Update property
         const tenantId = req.params.tenantId;
-        const updatedProperty = await propertyService.updateProperty(req.auth.userId, req.params.propertyId, { tenantId: tenantId});
+
+        const updatedProperty = await propertyService.updateProperty(req.auth.userId, req.params.propertyId, { tenantId: tenantId });
 
         res.json(updatedProperty);
     } catch (err) {
@@ -49,7 +50,7 @@ async function setTenant(req, res, next) {
 async function removeTenant(req, res, next) {
     try {
         // Update property
-        const updatedProperty = await propertyService.updateProperty(req.auth.userId, req.params.propertyId, { tenantId: null});
+        const updatedProperty = await propertyService.updateProperty(req.auth.userId, req.params.propertyId, { tenantId: null });
 
         res.json(updatedProperty);
     } catch (err) {

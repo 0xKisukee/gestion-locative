@@ -38,6 +38,13 @@ async function updateProperty(userId, propertyId, data) {
         throw new AppError('You are not the owner of this property', 403);
     }
 
+    // Verify if new tenant already has a property
+    const { tenantId } = data;
+    const existingProperty = await getPropertyByTenantId(tenantId);
+    if (existingProperty) {
+        throw new AppError('Tenant already lives in a property', 400);
+    }
+
     // update
     await property.update(data);
 
@@ -144,7 +151,7 @@ async function getPropertyByTenantId(userId) {
     });
 
     if (!property) {
-        throw new AppError('Property not found', 404);
+        return false;
     }
 
     return property;
