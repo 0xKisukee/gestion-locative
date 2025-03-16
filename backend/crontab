@@ -1,0 +1,2 @@
+# Exécute le script de création des loyers mensuels le premier jour de chaque mois à minuit
+* * * * * /usr/local/bin/node /app/scripts/launchRentsLoop.js >> /app/logs/cron.log 2>&1
