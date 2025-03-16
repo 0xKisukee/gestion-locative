@@ -1,4 +1,5 @@
 const propertyService = require('../services/property.service.js');
+const paymentService = require('../services/payment.service.js');
 
 async function createProperty(req, res, next) {
     try {
@@ -36,12 +37,14 @@ async function deleteProperty(req, res, next) {
 
 async function setTenant(req, res, next) {
     try {
-        // Update property
-        const tenantId = req.params.tenantId;
+        // Update property with new tenant
+        const updatedProperty = await propertyService.updateProperty(req.auth.userId, req.params.propertyId, { tenantId: req.params.tenantId });
 
-        const updatedProperty = await propertyService.updateProperty(req.auth.userId, req.params.propertyId, { tenantId: tenantId });
+        // Create prorata payment for tenant
+        const entryDate = req.body.entryDate || new Date(); // Utiliser une date d'entrée fournie ou la date actuelle par défaut
+        const payment = await paymentService.initRent(req.params.propertyId, entryDate);
 
-        res.json(updatedProperty);
+        res.json({ updatedProperty, payment });
     } catch (err) {
         next(err);
     }

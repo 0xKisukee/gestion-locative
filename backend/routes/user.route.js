@@ -14,4 +14,16 @@ router.get(
     userController.getProperty,
 );
 
+router.get(
+    '/myPayments',
+    auth.authenticateJwt,
+    userController.getPayments,
+);
+
+router.patch(
+    '/recordPayment/:paymentId',
+    auth.authenticateJwt,
+    userController.recordPayment,
+);
+
 module.exports = router;
