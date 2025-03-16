@@ -44,6 +44,26 @@ async function updateProperty(userId, propertyId, data) {
     return property;
 }
 
+async function deleteProperty(userId, propertyId) {
+    // Get property by id
+    const property = await Property.findByPk(propertyId);
+
+    // Verify property existence
+    if (!property) {
+        throw new AppError('Property not found', 404);
+    }
+
+    // Verify user ownership
+    if (userId !== property.ownerId) {
+        throw new AppError('You are not the owner of this property', 403);
+    }
+
+    // delete
+    await property.destroy();
+
+    return true;
+}
+
 async function getPropertyInfo(userId, propertyId) {
     // Get property informations by id
     const property = await Property.findByPk(propertyId, {
@@ -129,6 +149,7 @@ async function getPropertyByTenantId(userId) {
 module.exports = {
     createProperty,
     updateProperty,
+    deleteProperty,
     getPropertyInfo,
     getOwnerProperties,
     getPropertyByTenantId,

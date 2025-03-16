@@ -19,10 +19,22 @@ router.patch(
     propertyController.updateProperty,
 );
 
+router.delete(
+    '/delete/:propertyId',
+    auth.authenticateJwt,
+    propertyController.deleteProperty,
+);
+
 router.patch(
     '/:propertyId/setTenant/:tenantId',
     auth.authenticateJwt,
     propertyController.setTenant,
+);
+
+router.patch(
+    '/:propertyId/removeTenant',
+    auth.authenticateJwt,
+    propertyController.removeTenant,
 );
 
 router.get(
