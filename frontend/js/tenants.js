@@ -203,9 +203,4 @@ async function initTenantsPage() {
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM chargé');
     initTenantsPage();
-
-    document.getElementById('logout-btn').addEventListener('click', () => {
-        logout();
-        window.location.href = 'login.html';
-    });
 });

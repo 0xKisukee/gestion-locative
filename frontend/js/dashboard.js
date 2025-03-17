@@ -386,10 +386,10 @@ async function initDashboard() {
             this.style.boxShadow = '0 6px 15px rgba(0, 0, 0, 0.08)';
         });
     });
-
-    document.getElementById('logout-btn').addEventListener('click', function () {
-        logout();
-    });
 }
 
-document.addEventListener('DOMContentLoaded', initDashboard);
+// Gestion des événements
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM chargé');
+    initDashboard();
+});

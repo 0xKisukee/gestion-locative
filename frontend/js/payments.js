@@ -295,13 +295,6 @@ async function initPaymentsPage() {
         document.body.innerHTML = '<div class="alert alert-danger">Rôle non autorisé pour cette page.</div>';
     }
 
-    // Gestion de la déconnexion
-    document.getElementById('logout-btn').addEventListener('click', function () {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        window.location.href = 'login.html';
-    });
-
     // Ajout du gestionnaire de recherche s'il existe
     const searchInput = document.querySelector('input[placeholder="Rechercher..."]');
     if (searchInput) {
@@ -321,4 +314,8 @@ async function initPaymentsPage() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', initPaymentsPage);
+// Gestion des événements
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM chargé');
+    initPaymentsPage();
+});
