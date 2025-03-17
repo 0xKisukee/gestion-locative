@@ -9,17 +9,31 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
 </head>
 <body>
-    <div class="container">
-        <header class="py-3 mb-4 border-bottom shadow-sm">
+    <div class="container py-4">
+        <header class="py-3 mb-4 border-bottom shadow-sm bg-white rounded-3">
             <div class="d-flex align-items-center justify-content-between">
-                <h1 class="h4 fw-bold text-primary">Gestion Locative</h1>
-                <div id="auth-buttons">
-                    <a href="pages/login.html" class="btn btn-primary me-2 btn-hover">Connexion</a>
-                    <a href="pages/register.html" class="btn btn-outline-primary btn-hover">Inscription</a>
+                <div>
+                    <a href="index.html" class="text-decoration-none d-flex align-items-center">
+                        <i class="bi bi-building me-2 text-primary icon-header"></i>
+                        <h1 class="h4 mb-0 fw-bold text-primary">Gestion Locative</h1>
+                    </a>
                 </div>
-                <div id="user-info" class="align-items-center" style="display: none;">
-                    <span id="user-email" class="me-3 text-muted"></span>
-                    <button id="logout-btn" class="btn btn-outline-danger btn-sm">Déconnexion</button>
+                <div id="auth-buttons">
+                    <a href="pages/login.html" class="btn btn-primary me-2 action-btn">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> Connexion
+                    </a>
+                    <a href="pages/register.html" class="btn btn-outline-primary action-btn">
+                        <i class="bi bi-person-plus me-1"></i> Inscription
+                    </a>
+                </div>
+                <div id="user-info" class="d-flex align-items-center" style="display: none;">
+                    <div class="user-avatar-small me-2">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                    <span id="user-email" class="me-3 text-muted d-none d-md-inline"></span>
+                    <button id="logout-btn" class="btn btn-outline-danger btn-sm action-btn">
+                        <i class="bi bi-box-arrow-right me-1"></i> Déconnexion
+                    </button>
                 </div>
             </div>
         </header>
@@ -32,53 +46,192 @@
                     
                     <div id="welcome-connect">
                         <p class="col-md-8 fs-4 mb-4">Gérez vos biens, locataires et paiements en toute simplicité. Connectez-vous ou inscrivez-vous dès maintenant !</p>
-                        <a href="pages/login.html" class="btn btn-light btn-lg btn-hover me-2">Se connecter</a>
-                        <a href="pages/register.html" class="btn btn-outline-light btn-lg btn-hover">S'inscrire</a>
+                        <a href="pages/login.html" class="btn btn-light btn-lg action-btn me-2">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Se connecter
+                        </a>
+                        <a href="pages/register.html" class="btn btn-outline-light btn-lg action-btn">
+                            <i class="bi bi-person-plus me-1"></i> S'inscrire
+                        </a>
                     </div>
                     <div id="welcome-message" style="display: none;">
                         <p class="fs-3 mb-4">Bonjour <span id="user-firstname" class="fw-semibold"></span> ! Votre espace personnel vous attend.</p>
-                        <a href="pages/dashboard.html" class="btn btn-success btn-lg btn-hover">Accéder à mon espace</a>
+                        <a href="pages/dashboard.html" class="btn btn-success btn-lg action-btn">
+                            <i class="bi bi-speedometer2 me-1"></i> Accéder à mon espace
+                        </a>
                     </div>
                 </div>
             </div>
 
             <!-- Section fonctionnalités -->
             <section class="py-5">
-                <h2 class="text-center mb-5 fw-bold">Pourquoi choisir Gestion Locative ?</h2>
+                <h2 class="text-center mb-5 fw-bold page-header">Pourquoi choisir Gestion Locative ?</h2>
                 <div class="row g-4">
                     <div class="col-md-4">
                         <div class="card h-100 feature-card shadow-sm border-0">
-                            <div class="card-body text-center">
-                                <i class="bi bi-house-door fs-1 text-primary mb-3"></i>
+                            <div class="card-body text-center p-4">
+                                <div class="rounded-circle bg-primary bg-opacity-10 mx-auto mb-4 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                    <i class="bi bi-house-door fs-1 text-primary"></i>
+                                </div>
                                 <h5 class="card-title fw-semibold">Gestion des biens</h5>
-                                <p class="card-text text-muted">Suivez et organisez vos propriétés en un seul endroit.</p>
+                                <p class="card-text text-muted">Suivez et organisez vos propriétés en un seul endroit. Accédez à toutes les informations en quelques clics.</p>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="card h-100 feature-card shadow-sm border-0">
-                            <div class="card-body text-center">
-                                <i class="bi bi-people fs-1 text-success mb-3"></i>
+                            <div class="card-body text-center p-4">
+                                <div class="rounded-circle bg-success bg-opacity-10 mx-auto mb-4 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                    <i class="bi bi-people fs-1 text-success"></i>
+                                </div>
                                 <h5 class="card-title fw-semibold">Locataires</h5>
-                                <p class="card-text text-muted">Communiquez et gérez vos locataires efficacement.</p>
+                                <p class="card-text text-muted">Communiquez et gérez vos locataires efficacement. Gardez un historique complet des interactions.</p>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="card h-100 feature-card shadow-sm border-0">
-                            <div class="card-body text-center">
-                                <i class="bi bi-cash-stack fs-1 text-warning mb-3"></i>
+                            <div class="card-body text-center p-4">
+                                <div class="rounded-circle bg-warning bg-opacity-10 mx-auto mb-4 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                    <i class="bi bi-cash-stack fs-1 text-warning"></i>
+                                </div>
                                 <h5 class="card-title fw-semibold">Paiements</h5>
-                                <p class="card-text text-muted">Suivez les loyers et paiements en temps réel.</p>
+                                <p class="card-text text-muted">Suivez les loyers et paiements en temps réel. Générez des rapports détaillés en un instant.</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
+
+            <!-- Section testimonials -->
+            <section class="py-5 bg-light rounded-3 mt-5">
+                <div class="container">
+                    <h2 class="text-center mb-5 fw-bold">Ce que nos utilisateurs disent</h2>
+                    <div class="row">
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="text-warning me-2">
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                        </div>
+                                        <small class="text-muted">5.0</small>
+                                    </div>
+                                    <p class="card-text fst-italic mb-4">"Cet outil a complètement transformé ma façon de gérer mes biens locatifs. C'est intuitif et efficace !"</p>
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-secondary bg-opacity-25 rounded-circle me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                            <span class="text-secondary">ML</span>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 fw-semibold">Marie L.</h6>
+                                            <small class="text-muted">Propriétaire, Paris</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="text-warning me-2">
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-half"></i>
+                                        </div>
+                                        <small class="text-muted">4.5</small>
+                                    </div>
+                                    <p class="card-text fst-italic mb-4">"Je gère 15 appartements et cette plateforme m'a fait gagner des heures chaque semaine. Un vrai gain de temps !"</p>
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-secondary bg-opacity-25 rounded-circle me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                            <span class="text-secondary">TD</span>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 fw-semibold">Thomas D.</h6>
+                                            <small class="text-muted">Investisseur, Lyon</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="text-warning me-2">
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                        </div>
+                                        <small class="text-muted">5.0</small>
+                                    </div>
+                                    <p class="card-text fst-italic mb-4">"En tant que locataire, c'est très pratique pour suivre mes paiements et communiquer avec mon propriétaire !"</p>
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-secondary bg-opacity-25 rounded-circle me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                            <span class="text-secondary">SB</span>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 fw-semibold">Sophie B.</h6>
+                                            <small class="text-muted">Locataire, Bordeaux</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CTA Section -->
+            <section class="my-5 py-5 text-center">
+                <h2 class="display-6 fw-bold mb-4">Prêt à simplifier votre gestion locative ?</h2>
+                <p class="lead mb-4">Rejoignez des milliers de propriétaires satisfaits et commencez à utiliser notre plateforme dès aujourd'hui.</p>
+                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                    <a href="pages/register.html" class="btn btn-primary btn-lg px-4 gap-3 action-btn">
+                        <i class="bi bi-person-plus me-1"></i> Créer un compte gratuit
+                    </a>
+                    <a href="#" class="btn btn-outline-secondary btn-lg px-4 action-btn">
+                        <i class="bi bi-info-circle me-1"></i> En savoir plus
+                    </a>
+                </div>
+            </section>
         </main>
 
-        <footer class="mt-5 py-3 text-center border-top text-muted bg-light">
-            <p>© 2025 Gestion Locative - Tous droits réservés</p>
+        <footer class="mt-5 py-3 text-center border-top text-muted rounded-3 bg-white shadow-sm">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <h5 class="text-primary fw-bold mb-3">Gestion Locative</h5>
+                        <p class="small text-muted">La solution complète pour la gestion de vos biens immobiliers et de vos locataires.</p>
+                    </div>
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <h6 class="fw-bold mb-3">Liens rapides</h6>
+                        <ul class="list-unstyled small">
+                            <li><a href="#" class="text-decoration-none text-muted">Accueil</a></li>
+                            <li><a href="#" class="text-decoration-none text-muted">Fonctionnalités</a></li>
+                            <li><a href="#" class="text-decoration-none text-muted">Tarifs</a></li>
+                            <li><a href="#" class="text-decoration-none text-muted">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h6 class="fw-bold mb-3">Contact</h6>
+                        <ul class="list-unstyled small">
+                            <li class="text-muted"><i class="bi bi-envelope me-2"></i>contact@gestion-locative.fr</li>
+                            <li class="text-muted"><i class="bi bi-telephone me-2"></i>01 23 45 67 89</li>
+                            <li class="text-muted"><i class="bi bi-geo-alt me-2"></i>123 Rue de Paris, 75000 Paris</li>
+                        </ul>
+                    </div>
+                </div>
+                <hr class="my-3">
+                <p class="mb-0 small">© 2025 Gestion Locative - Tous droits réservés</p>
+            </div>
         </footer>
     </div>
 
