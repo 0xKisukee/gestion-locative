@@ -120,31 +120,23 @@ async function loadTenantPayments() {
         const nextPayment = payments.find(payment => !payment.isPaid && payment.status !== 'paid');
 
         if (nextPayment) {
-            // Mise à jour des dates du prochain paiement
-            const formattedDate = new Date(nextPayment.dueDate).toLocaleDateString('fr-FR');
-            document.getElementById('next-payment-date').textContent = formattedDate;
-            document.getElementById('next-payment-date-alert').textContent = formattedDate;
-            document.getElementById('next-payment-amount').textContent = `${nextPayment.amount.toFixed(2)} €`;
-
             // Ajout des coordonnées bancaires du propriétaire (à compléter avec l'API réelle)
             // Idéalement ces informations devraient venir de l'API
             document.getElementById('owner-iban').textContent = nextPayment.paymentOwner?.iban || 'FR76 1234 5678 9101 1121 3141 516';
             document.getElementById('owner-bic').textContent = nextPayment.paymentOwner?.bic || 'AGRIFPPP123';
             document.getElementById('owner-name').textContent = nextPayment.paymentOwner?.bankAccountName || nextPayment.paymentOwner?.username || 'SCI EXEMPLE';
-            document.getElementById('payment-reference').textContent = nextPayment.reference || `REF-${nextPayment.id}`;
+//            document.getElementById('payment-reference').textContent = nextPayment.reference || `REF-${nextPayment.id}`;
         }
 
         // Calcul des statistiques
-        const paidCounter = payments.filter(payment => payment.status === "paid").length;
-        const pendingCounter = payments.filter(pay => pay.status === "due").length;
-        const pendingAmount = payments
+        const dueCounter = payments.filter(pay => pay.status === "due").length;
+        const dueAmount = payments
             .filter(payment => payment.status === "due")
             .reduce((sum, payment) => sum + payment.amount, 0);
 
         // Mise à jour des statistiques
-        document.getElementById('tenant-paid-count').textContent = paidCounter;
-        document.getElementById('tenant-pending-count').textContent = pendingCounter;
-        document.getElementById('tenant-pending-amount').textContent = `${pendingAmount.toFixed(2)} €`;
+        document.getElementById('tenant-due-count').textContent = dueCounter;
+        document.getElementById('tenant-due-amount').textContent = `${dueAmount.toFixed(2)} €`;
 
         // Remplir le tableau des paiements
         const tableBody = document.getElementById('tenant-payments-table-body');
@@ -163,18 +155,47 @@ async function loadTenantPayments() {
                     row.classList.add('table-danger');
                 }
 
+                // Créer les cellules de la ligne
                 row.innerHTML = `
-                    <td class="ps-4 payment-reference">${payment.id}</td>
+                    <td class="ps-4">${payment.id}</td>
                     <td class="payment-date">${new Date(payment.dueDate).toLocaleDateString('fr-FR')}</td>
-                    <td>${payment.paymentOwner.username || 'N/A'}</td>
                     <td>${payment.paymentProperty.address || 'N/A'}</td>
                     <td class="payment-amount">${payment.amount.toFixed(2)} €</td>
-                    <td class="pe-4">
+                    <td class="">
                         <span class="badge ${statusClass} badge-status">
                             ${statusText}
                         </span>
                     </td>
+                    <td class="pe-4"></td> <!-- Placeholder pour la colonne Actions -->
                 `;
+
+                // Créer le contenu de la dernière cellule (Actions)
+                const actionCell = row.querySelector('td:last-child');
+                if (payment.status !== 'paid') {
+                    // Créer le bouton "Payer"
+                    const button = document.createElement('button');
+                    button.className = 'btn btn-sm btn-primary action-btn';
+                    button.setAttribute('data-payment-id', payment.id);
+                    button.innerHTML = `<i class="bi bi-check2-circle me-1"></i>Payer`;
+
+                    // Ajouter l'écouteur d'événement directement au bouton
+                    button.addEventListener('click', () => {
+                        const paymentId = button.getAttribute('data-payment-id');
+                        const row = button.closest('tr');
+                        const amount = row.querySelector('.payment-amount').textContent.replace(' €', '');
+                        preparePaymentModal(paymentId, amount);
+                    });
+
+                    // Ajouter le bouton à la cellule
+                    actionCell.appendChild(button);
+                } else {
+                    // Ajouter le texte "Complet" si le paiement est déjà effectué
+                    const completeSpan = document.createElement('span');
+                    completeSpan.className = 'text-success';
+                    completeSpan.innerHTML = `<i class="bi bi-check-circle-fill me-1"></i>Complet`;
+                    actionCell.appendChild(completeSpan);
+                }
+
                 tableBody.appendChild(row);
             });
         }
@@ -207,6 +228,43 @@ async function recordPayment(paymentId) {
         console.error('Erreur:', error);
         showNotification('Erreur: ' + error.message, 'danger');
     }
+}
+
+// Fonction pour préparer et ouvrir la modale
+function preparePaymentModal(paymentId, amount) {
+    // Remplir les champs de la modale avec les données du paiement
+    document.getElementById('modal-payment-reference').textContent = formatReference(paymentId);
+    document.getElementById('modal-payment-amount').textContent = `${amount} €`;
+
+    // Copier les coordonnées bancaires depuis la section existante
+    document.getElementById('modal-owner-iban').textContent = document.getElementById('owner-iban').textContent;
+    document.getElementById('modal-owner-bic').textContent = document.getElementById('owner-bic').textContent;
+    document.getElementById('modal-owner-name').textContent = document.getElementById('owner-name').textContent;
+
+    // Ouvrir la modale
+    const payModal = new bootstrap.Modal(document.getElementById('payInvoiceModal'));
+    payModal.show();
+}
+
+function formatReference(paymentId) {
+    const tenantName = getCurrentUser().username;
+
+    // Vérifier que les arguments sont valides
+    if (!paymentId || !tenantName || typeof tenantName !== 'string') {
+        console.log(paymentId);
+        console.log(tenantName);
+        throw new Error(`Impossible de générer la référence.`);
+    }
+
+    // Extraire le nom de famille (dernier mot du nom complet)
+    const nameParts = tenantName.trim().split(' ');
+    const lastName = nameParts[nameParts.length - 1].toUpperCase();
+
+    // Formater l'ID avec 5 chiffres (zéros à gauche)
+    const formattedId = String(paymentId).padStart(5, '0');
+
+    // Construire la référence
+    return `REF-${lastName}-${formattedId}`;
 }
 
 // Fonction pour afficher une notification
@@ -295,23 +353,6 @@ async function initPaymentsPage() {
         document.body.innerHTML = '<div class="alert alert-danger">Rôle non autorisé pour cette page.</div>';
     }
 
-    // Ajout du gestionnaire de recherche s'il existe
-    const searchInput = document.querySelector('input[placeholder="Rechercher..."]');
-    if (searchInput) {
-        searchInput.addEventListener('input', function (e) {
-            const searchTerm = e.target.value.toLowerCase();
-            const tableRows = document.querySelectorAll('#owner-payments-table-body tr');
-
-            tableRows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                if (text.includes(searchTerm)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-        });
-    }
 }
 
 // Gestion des événements

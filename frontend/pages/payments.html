@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
 </head>
+
 <body>
     <div class="container py-4">
         <header class="py-3 mb-4 border-bottom shadow-sm bg-white rounded-3">
@@ -130,15 +132,6 @@
                 <h2 class="fw-bold page-header">Mes Paiements</h2>
             </div>
 
-            <!-- Alerte de paiement -->
-            <div class="alert alert-warning d-flex align-items-center mb-4" role="alert">
-                <i class="bi bi-bell-fill me-2 fs-4"></i>
-                <div>
-                    <strong>Rappel :</strong> Votre prochain paiement est dû le <span id="next-payment-date-alert">10/04/2025</span>. 
-                    <a href="#bank-details-section" class="alert-link">Voir les coordonnées bancaires</a>
-                </div>
-            </div>
-
             <!-- Statistiques et coordonnées bancaires -->
             <div class="row g-4 mb-4">
                 <!-- Statistiques -->
@@ -149,28 +142,15 @@
                         </div>
                         <div class="card-body">
                             <div class="row g-3">
-                                <div class="col-md-6">
+                                <div class="col-12">
                                     <div class="p-3 rounded-3 bg-light h-100">
                                         <div class="d-flex align-items-center">
                                             <div class="stat-icon-container bg-primary-light me-3">
                                                 <i class="bi bi-receipt text-primary fs-4"></i>
                                             </div>
                                             <div>
-                                                <h6 class="text-muted mb-1">Factures dues</h6>
-                                                <h3 class="mb-0 fw-bold" id="tenant-pending-count">--</h3>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="p-3 rounded-3 bg-light h-100">
-                                        <div class="d-flex align-items-center">
-                                            <div class="stat-icon-container bg-success-light me-3">
-                                                <i class="bi bi-check-circle text-success fs-4"></i>
-                                            </div>
-                                            <div>
-                                                <h6 class="text-muted mb-1">Payés</h6>
-                                                <h3 class="mb-0 fw-bold" id="tenant-paid-count">--</h3>
+                                                <h6 class="text-muted mb-1">Factures à payer</h6>
+                                                <h3 class="mb-0 fw-bold" id="tenant-due-count">--</h3>
                                             </div>
                                         </div>
                                     </div>
@@ -181,8 +161,8 @@
                                             <i class="bi bi-cash-coin text-danger fs-4"></i>
                                         </div>
                                         <div class="flex-grow-1">
-                                            <h6 class="text-muted mb-1">Montant dû actuellement</h6>
-                                            <h2 class="mb-0 fw-bold text-danger" id="tenant-pending-amount">-- €</h2>
+                                            <h6 class="text-muted mb-1">Montant total à payer</h6>
+                                            <h2 class="mb-0 fw-bold text-danger" id="tenant-due-amount">--</h2>
                                         </div>
                                     </div>
                                 </div>
@@ -190,7 +170,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Coordonnées bancaires -->
                 <div class="col-md-6" id="bank-details-section">
                     <div class="card bank-details-card shadow-sm border-0 h-100">
@@ -205,39 +185,37 @@
                                 <div class="bank-detail-label">
                                     <i class="bi bi-credit-card me-2 text-primary"></i> IBAN
                                 </div>
-                                <div class="bank-detail-value font-monospace" id="owner-iban">FR76 1234 5678 9101 1121 3141 516</div>
+                                <div class="bank-detail-value font-monospace" id="owner-iban">FR76 1234 5678 9101 1121
+                                    3141 516</div>
                             </div>
-                            
+
                             <div class="bank-detail-item">
                                 <div class="bank-detail-label">
                                     <i class="bi bi-building me-2 text-primary"></i> BIC
                                 </div>
                                 <div class="bank-detail-value font-monospace" id="owner-bic">AGRIFPPP123</div>
                             </div>
-                            
+
                             <div class="bank-detail-item">
                                 <div class="bank-detail-label">
                                     <i class="bi bi-person me-2 text-primary"></i> Titulaire
                                 </div>
                                 <div class="bank-detail-value" id="owner-name">SCI EXEMPLE</div>
                             </div>
-                            
+<!--
                             <div class="alert alert-info mt-3">
                                 <div class="d-flex">
                                     <i class="bi bi-info-circle-fill me-2 fs-5"></i>
                                     <div>
-                                        <strong>Important :</strong> Veuillez indiquer la référence <span class="badge bg-primary px-2 py-1 payment-reference" id="payment-reference">REF-12345</span> lors de votre virement pour faciliter le traitement de votre paiement.
+                                        <strong>Important :</strong> Veuillez indiquer la référence <span
+                                            class="badge bg-primary px-2 py-1 payment-reference"
+                                            id="payment-reference">REF-XXXXX</span> lors de votre virement pour
+                                        faciliter le traitement de votre paiement.
                                     </div>
                                 </div>
                             </div>
+-->
                             
-                            <div class="alert alert-light border mt-3 mb-0">
-                                <i class="bi bi-calendar-check me-2"></i>
-                                <span class="text-muted">Prochain paiement dû le </span>
-                                <strong class="ms-1" id="next-payment-date">12/04/2025</strong>
-                                <span class="ms-1 text-muted">d'un montant de</span>
-                                <strong class="text-danger ms-1" id="next-payment-amount">750,00 €</strong>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -260,10 +238,10 @@
                                 <tr>
                                     <th class="ps-4">Référence</th>
                                     <th>Date d'échéance</th>
-                                    <th>Propriétaire</th>
                                     <th>Bien</th>
                                     <th>Montant</th>
-                                    <th class="pe-4">Statut</th>
+                                    <th>Statut</th>
+                                    <th class="pe-4">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="tenant-payments-table-body">
@@ -296,6 +274,73 @@
                     </nav>
                 </div>
             </div>
+
+            <!-- Modal Paiement Locataire -->
+            <div class="modal fade" id="payInvoiceModal" tabindex="-1" aria-labelledby="payInvoiceModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content rounded-3 shadow">
+                        <div class="modal-header bg-primary bg-opacity-10 border-0">
+                            <h5 class="modal-title fw-bold text-primary" id="payInvoiceModalLabel"><i
+                                    class="bi bi-cash-stack me-2"></i> Payer une facture</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Fermer"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-4">
+                                <h6 class="fw-bold text-primary"><i class="bi bi-bank me-2"></i> Coordonnées bancaires
+                                </h6>
+                                <div class="bank-detail-item">
+                                    <div class="bank-detail-label">
+                                        <i class="bi bi-credit-card me-2 text-primary"></i> IBAN
+                                    </div>
+                                    <div class="bank-detail-value font-monospace" id="modal-owner-iban">FR76 1234 5678
+                                        9101 1121 3141 516</div>
+                                </div>
+                                <div class="bank-detail-item">
+                                    <div class="bank-detail-label">
+                                        <i class="bi bi-building me-2 text-primary"></i> BIC
+                                    </div>
+                                    <div class="bank-detail-value font-monospace" id="modal-owner-bic">AGRIFPPP123</div>
+                                </div>
+                                <div class="bank-detail-item">
+                                    <div class="bank-detail-label">
+                                        <i class="bi bi-person me-2 text-primary"></i> Titulaire
+                                    </div>
+                                    <div class="bank-detail-value" id="modal-owner-name">SCI EXEMPLE</div>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <h6 class="fw-bold text-primary"><i class="bi bi-receipt me-2"></i> Détails du paiement
+                                </h6>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span>Référence :</span>
+                                    <span class="badge bg-primary px-2 py-1"
+                                        id="modal-payment-reference">REF-XXXXX</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                    <span>Montant à payer :</span>
+                                    <span class="fw-bold text-danger fs-5" id="modal-payment-amount">-- €</span>
+                                </div>
+                            </div>
+                            <div class="alert alert-info">
+                                <div class="d-flex">
+                                    <i class="bi bi-info-circle-fill me-2 fs-5"></i>
+                                    <div>
+                                        <strong>Instructions :</strong> Effectuez un virement avec la référence
+                                        ci-dessus pour valider votre paiement. Une fois le paiement reçu, le statut sera
+                                        mis à jour.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer bg-light border-0">
+                            <button type="button" class="btn btn-secondary action-btn" data-bs-dismiss="modal"><i
+                                    class="bi bi-x-circle me-1"></i> Fermer</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <footer class="mt-5 py-3 text-center border-top text-muted rounded-3 bg-white shadow-sm">
@@ -309,4 +354,5 @@
     <script src="../js/main.js"></script>
     <script src="../js/payments.js"></script>
 </body>
+
 </html>
