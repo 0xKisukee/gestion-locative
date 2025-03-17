@@ -32,7 +32,7 @@ async function loadOwnerPayments() {
             .filter(payment => payment.status == "paid")
             .reduce((sum, payment) => sum + payment.amount, 0);
         const pendingAmount = payments
-            .filter(payment => payment.status == "pending")
+            .filter(payment => payment.status == "incoming")
             .reduce((sum, payment) => sum + payment.amount, 0);
         const dueAmount = payments
             .filter(payment => payment.status == "due")
