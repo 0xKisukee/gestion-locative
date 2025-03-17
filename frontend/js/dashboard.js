@@ -12,10 +12,8 @@ function getCurrentUser() {
 // Fonction pour charger le dashboard d'un propriétaire
 async function loadOwnerDashboard() {
     try {
-        console.log('Tentative de chargement des propriétés...');
-        console.log('Token utilisé:', getToken());
 
-        const response = await fetch('/api/property/getMyProperties', {
+        const propertiesResponse = await fetch('/api/property/getMyProperties', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${getToken()}`,
@@ -23,16 +21,30 @@ async function loadOwnerDashboard() {
             }
         });
 
-        console.log('Statut de la réponse:', response.status);
-
-        if (!response.ok) {
-            const errorText = await response.text();
+        if (!propertiesResponse.ok) {
+            const errorText = await propertiesResponse.text();
             console.error('Erreur de l\'API:', errorText);
-            throw new Error(`Erreur lors du chargement des propriétés: ${response.status} ${response.statusText}`);
+            throw new Error(`Erreur lors du chargement des propriétés: ${propertiesResponse.status} ${propertiesResponse.statusText}`);
         }
 
-        const properties = await response.json();
+        const paymentsResponse = await fetch('/api/user/myPayments', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${getToken()}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!paymentsResponse.ok) {
+            const errorText = await paymentsResponse.text();
+            console.error('Erreur de l\'API:', errorText);
+            throw new Error(`Erreur lors du chargement des propriétés: ${paymentsResponse.status} ${paymentsResponse.statusText}`);
+        }
+
+        const properties = await propertiesResponse.json();
+        const payments = await paymentsResponse.json();
         console.log('Propriétés chargées:', properties);
+        console.log('Paiements chargés:', payments);
 
         // Filtrer les propriétés avec locataires (status rented)
         const propertiesWithTenants = properties.filter(prop => prop.status === 'rented');
@@ -40,7 +52,7 @@ async function loadOwnerDashboard() {
         // Mettre à jour les statistiques dans les cartes
         const propertiesCount = document.getElementById('properties-count');
         const tenantsCount = document.getElementById('tenants-count');
-        const duePayments = document.getElementById('due-payments');
+        const duePaymentsCount = document.getElementById('due-payments');
 
         // Nombre total de propriétés
         if (propertiesCount) propertiesCount.textContent = properties.length;
@@ -51,9 +63,10 @@ async function loadOwnerDashboard() {
         }
 
         // À adapter avec données réelles des paiements en retard
-        if (duePayments) duePayments.textContent = '0'; // À adapter avec données réelles
+        const duePayments = payments.filter(pay => pay.status === 'due');
+        if (duePaymentsCount) duePaymentsCount.textContent = duePayments.length; // À adapter avec données réelles
 
-        // Calcul des statistiques réelles
+        // Calcul des statistiques
         // 1. Revenu mensuel (somme des loyers des biens occupés)
         const monthlyRevenue = propertiesWithTenants.reduce((sum, prop) => sum + (prop.rent), 0);
 
