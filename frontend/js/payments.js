@@ -60,7 +60,11 @@ async function loadOwnerPayments() {
                 }
 
                 row.innerHTML = `
-                    <td class="ps-4 payment-reference">${payment.id}</td>
+                    <td class="ps-4">
+                        <span class="badge bg-primary px-2 py-1">
+                            ${formatReference(payment.id, payment.paymentTenant.username)}
+                        </span>
+                    </td>
                     <td class="payment-date">${new Date(payment.dueDate).toLocaleDateString('fr-FR')}</td>
                     <td>${payment.paymentTenant.username || 'N/A'}</td>
                     <td>${payment.paymentProperty.address || 'N/A'}</td>
@@ -125,7 +129,7 @@ async function loadTenantPayments() {
             document.getElementById('owner-iban').textContent = nextPayment.paymentOwner?.iban || 'FR76 1234 5678 9101 1121 3141 516';
             document.getElementById('owner-bic').textContent = nextPayment.paymentOwner?.bic || 'AGRIFPPP123';
             document.getElementById('owner-name').textContent = nextPayment.paymentOwner?.bankAccountName || nextPayment.paymentOwner?.username || 'SCI EXEMPLE';
-//            document.getElementById('payment-reference').textContent = nextPayment.reference || `REF-${nextPayment.id}`;
+            //            document.getElementById('payment-reference').textContent = nextPayment.reference || `REF-${nextPayment.id}`;
         }
 
         // Calcul des statistiques
@@ -154,10 +158,15 @@ async function loadTenantPayments() {
                 if (payment.status === 'due') {
                     row.classList.add('table-danger');
                 }
+                console.log(payment)
 
                 // Créer les cellules de la ligne
                 row.innerHTML = `
-                    <td class="ps-4">${payment.id}</td>
+                    <td class="ps-4">
+                        <span class="badge bg-primary px-2 py-1">
+                            ${formatReference(payment.id, getCurrentUser().username)}
+                        </span>
+                    </td>
                     <td class="payment-date">${new Date(payment.dueDate).toLocaleDateString('fr-FR')}</td>
                     <td>${payment.paymentProperty.address || 'N/A'}</td>
                     <td class="payment-amount">${payment.amount.toFixed(2)} €</td>
@@ -183,7 +192,7 @@ async function loadTenantPayments() {
                         const paymentId = button.getAttribute('data-payment-id');
                         const row = button.closest('tr');
                         const amount = row.querySelector('.payment-amount').textContent.replace(' €', '');
-                        preparePaymentModal(paymentId, amount);
+                        preparePaymentModal(paymentId, getCurrentUser().username, amount);
                     });
 
                     // Ajouter le bouton à la cellule
@@ -231,9 +240,9 @@ async function recordPayment(paymentId) {
 }
 
 // Fonction pour préparer et ouvrir la modale
-function preparePaymentModal(paymentId, amount) {
+function preparePaymentModal(paymentId, tenantName, amount) {
     // Remplir les champs de la modale avec les données du paiement
-    document.getElementById('modal-payment-reference').textContent = formatReference(paymentId);
+    document.getElementById('modal-payment-reference').textContent = formatReference(paymentId, tenantName);
     document.getElementById('modal-payment-amount').textContent = `${amount} €`;
 
     // Copier les coordonnées bancaires depuis la section existante
@@ -246,9 +255,7 @@ function preparePaymentModal(paymentId, amount) {
     payModal.show();
 }
 
-function formatReference(paymentId) {
-    const tenantName = getCurrentUser().username;
-
+function formatReference(paymentId, tenantName) {
     // Vérifier que les arguments sont valides
     if (!paymentId || !tenantName || typeof tenantName !== 'string') {
         console.log(paymentId);
