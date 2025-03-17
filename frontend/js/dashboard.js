@@ -12,6 +12,15 @@ function getCurrentUser() {
 // Fonction pour charger le dashboard d'un propriétaire
 async function loadOwnerDashboard() {
     try {
+        // Afficher les indicateurs de chargement
+        document.getElementById('owner-tickets').innerHTML = `
+            <div class="text-center p-4">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Chargement...</span>
+                </div>
+                <p class="text-muted mt-3">Chargement des données...</p>
+            </div>
+        `;
 
         const propertiesResponse = await fetch('/api/property/getMyProperties', {
             method: 'GET',
@@ -54,30 +63,52 @@ async function loadOwnerDashboard() {
         const tenantsCount = document.getElementById('tenants-count');
         const duePaymentsCount = document.getElementById('due-payments');
 
+        // Ajouter une animation simple pour le compteur
+        function animateCounter(element, value, duration = 1000) {
+            if (!element) return;
+            const startValue = 0;
+            const increment = (value / duration) * 10;
+            let currentValue = startValue;
+            const timer = setInterval(() => {
+                currentValue += increment;
+                if (currentValue >= value) {
+                    clearInterval(timer);
+                    currentValue = value;
+                }
+                if (typeof value === 'number' && !isNaN(value)) {
+                    if (element.id.includes('amount') || element.id.includes('revenue')) {
+                        element.textContent = `${Math.floor(currentValue)} €`;
+                    } else {
+                        element.textContent = Math.floor(currentValue);
+                    }
+                }
+            }, 10);
+        }
+
         // Nombre total de propriétés
-        if (propertiesCount) propertiesCount.textContent = properties.length;
+        if (propertiesCount) animateCounter(propertiesCount, properties.length);
 
         // Nombre de propriétés avec locataires
         if (tenantsCount) {
-            tenantsCount.textContent = propertiesWithTenants.length;
+            animateCounter(tenantsCount, propertiesWithTenants.length);
         }
 
         // À adapter avec données réelles des paiements en retard
         const duePayments = payments.filter(pay => pay.status === 'due');
-        if (duePaymentsCount) duePaymentsCount.textContent = duePayments.length; // À adapter avec données réelles
+        if (duePaymentsCount) animateCounter(duePaymentsCount, duePayments.length);
 
         // Calcul des statistiques
         // 1. Revenu mensuel (somme des loyers des biens occupés)
-        const monthlyRevenue = propertiesWithTenants.reduce((sum, prop) => sum + (prop.rent), 0);
+        const monthlyRevenue = propertiesWithTenants.reduce((sum, prop) => (sum + prop.rent), 0);
 
         // 2. Revenu potentiel (somme de tous les loyers)
-        const potentialRevenue = properties.reduce((sum, prop) => sum + (prop.rent), 0);
+        const potentialRevenue = properties.reduce((sum, prop) => (sum + prop.rent), 0);
 
         // 3. Nombre de biens inoccupés
         const freeProperties = properties.filter(prop => prop.status === 'free').length;
 
         // 4. Total des impayés dûs
-        const unpaidAmount = 0;
+        const unpaidAmount = duePayments.reduce((sum, pay) => (sum + pay.amount), 0);
 
         // Mettre à jour les statistiques dans la section "Statistiques clés"
         const monthlyRevenueStat = document.getElementById('monthly-revenue-stat');
@@ -85,10 +116,10 @@ async function loadOwnerDashboard() {
         const freePropertiesStat = document.getElementById('free-properties-stat');
         const unpaidAmountStat = document.getElementById('unpaid-amount-stat');
 
-        if (monthlyRevenueStat) monthlyRevenueStat.textContent =  `${monthlyRevenue} €`; // À adapter
-        if (potentialRevenueStat) potentialRevenueStat.textContent = `${potentialRevenue} €`; // À adapter
-        if (freePropertiesStat) freePropertiesStat.textContent = freeProperties; // À adapter
-        if (unpaidAmountStat) unpaidAmountStat.textContent = `${unpaidAmount} €`; // À adapter
+        if (monthlyRevenueStat) animateCounter(monthlyRevenueStat, monthlyRevenue);
+        if (potentialRevenueStat) animateCounter(potentialRevenueStat, potentialRevenue);
+        if (freePropertiesStat) animateCounter(freePropertiesStat, freeProperties);
+        if (unpaidAmountStat) animateCounter(unpaidAmountStat, unpaidAmount);
 
         return properties;
     } catch (error) {
@@ -97,7 +128,7 @@ async function loadOwnerDashboard() {
         if (ownerSection) {
             const errorMessage = document.createElement('div');
             errorMessage.className = 'alert alert-danger';
-            errorMessage.innerHTML = `<i class="bi bi-exclamation-triangle"></i> Impossible de charger vos propriétés: ${error.message}`;
+            errorMessage.innerHTML = `<i class="bi bi-exclamation-triangle me-2"></i> Impossible de charger vos propriétés: ${error.message}`;
             ownerSection.prepend(errorMessage);
         }
         return [];
@@ -120,7 +151,7 @@ async function loadTenantDashboard() {
         if (response.status === 404) {
             propertyInfoElement.innerHTML = `
                 <div class="alert alert-info">
-                    <i class="bi bi-info-circle"></i> Vous n'avez actuellement aucune location active.
+                    <i class="bi bi-info-circle me-2"></i> Vous n'avez actuellement aucune location active.
                 </div>
             `;
             // Mettre à jour les informations de paiement
@@ -139,31 +170,92 @@ async function loadTenantDashboard() {
         const propertyType = property.detail === 'apartment' ? 'Appartement' : 'Maison';
 
         propertyInfoElement.innerHTML = `
-            <h5 class="mb-3">${propertyType}</h5>
-            <p><i class="bi bi-geo-alt"></i> ${property.address}, ${property.city}</p>
-            <p><i class="bi bi-rulers"></i> Surface: ${property.surface} m²</p>
-            <p><i class="bi bi-cash"></i> Loyer: ${property.rent} €</p>
-            <p><i class="bi bi-person"></i> Propriétaire: ${property.owner?.username || 'Non spécifié'}</p>
+            <div class="d-flex align-items-start mb-4">
+                <div class="bg-primary bg-opacity-10 p-3 rounded-3 me-3">
+                    <i class="bi bi-house-door fs-2 text-primary"></i>
+                </div>
+                <div>
+                    <h5 class="mb-1 fw-bold">${propertyType}</h5>
+                    <p class="text-muted mb-0">${property.address}, ${property.city}</p>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-md-6 mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-light rounded-circle p-2 me-2">
+                            <i class="bi bi-rulers text-primary"></i>
+                        </div>
+                        <div>
+                            <div class="text-muted small">Surface</div>
+                            <strong>${property.surface} m²</strong>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-light rounded-circle p-2 me-2">
+                            <i class="bi bi-cash text-primary"></i>
+                        </div>
+                        <div>
+                            <div class="text-muted small">Loyer mensuel</div>
+                            <strong>${property.rent} €</strong>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-light rounded-circle p-2 me-2">
+                            <i class="bi bi-person text-primary"></i>
+                        </div>
+                        <div>
+                            <div class="text-muted small">Propriétaire</div>
+                            <strong>${property.owner?.username || 'Non spécifié'}</strong>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-light rounded-circle p-2 me-2">
+                            <i class="bi bi-calendar-check text-primary"></i>
+                        </div>
+                        <div>
+                            <div class="text-muted small">Date d'entrée</div>
+                            <strong>${new Date(property.moveInDate || Date.now()).toLocaleDateString('fr-FR')}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
         `;
 
         // Exemple fictif pour les paiements (à remplacer par une API réelle)
         document.getElementById('next-payment-date').textContent = '20 mars 2025'; // À adapter
         document.getElementById('next-payment-amount').textContent = `${property.rent} €`; // OK
-        document.getElementById('payment-status').textContent = 'À jour'; // À adapter
+        
+        // Mettre à jour le statut de paiement avec une couleur appropriée
+        const paymentStatus = document.getElementById('payment-status');
+        paymentStatus.textContent = 'À jour';
+        paymentStatus.className = 'badge bg-success rounded-pill px-3 py-2';
+        
     } catch (error) {
         console.error('Erreur lors du chargement de la location:', error);
         const propertyInfoElement = document.getElementById('tenant-property-info');
         if (propertyInfoElement) {
             propertyInfoElement.innerHTML = `
                 <div class="alert alert-danger">
-                    <i class="bi bi-exclamation-triangle"></i> Impossible de charger les informations: ${error.message}
+                    <i class="bi bi-exclamation-triangle me-2"></i> Impossible de charger les informations: ${error.message}
                 </div>
             `;
         }
         // Réinitialiser les champs de paiement en cas d'erreur
         document.getElementById('next-payment-date').textContent = '--';
         document.getElementById('next-payment-amount').textContent = '-- €';
-        document.getElementById('payment-status').textContent = 'Erreur';
+        const paymentStatus = document.getElementById('payment-status');
+        paymentStatus.textContent = 'Erreur';
+        paymentStatus.className = 'badge bg-danger rounded-pill px-3 py-2';
     }
 }
 
@@ -171,26 +263,37 @@ async function loadTenantDashboard() {
 function generateOwnerTickets() {
     // fake tickets for tests
     const tickets = [
-        { title: 'Paiement reçu', date: 'il y a 3 jours', message: 'Le loyer pour l\'appartement rue de Paris a été reçu.' },
-        { title: 'Contrat à renouveler', date: 'il y a 1 semaine', message: 'Le contrat de location pour l\'appartement rue du Commerce arrive à échéance.' },
-        { title: 'Demande de réparation', date: 'il y a 2 semaines', message: 'Un locataire a signalé un problème de plomberie.' }
+        { title: 'Paiement reçu', date: 'il y a 3 jours', message: 'Le loyer pour l\'appartement rue de Paris a été reçu.', status: 'success' },
+        { title: 'Contrat à renouveler', date: 'il y a 1 semaine', message: 'Le contrat de location pour l\'appartement rue du Commerce arrive à échéance.', status: 'warning' },
+        { title: 'Demande de réparation', date: 'il y a 2 semaines', message: 'Un locataire a signalé un problème de plomberie.', status: 'danger' }
     ];
 
     const ticketsContainer = document.getElementById('owner-tickets');
     if (ticketsContainer) {
-        ticketsContainer.innerHTML = tickets.length === 0 ? '<p class="text-muted">Aucun ticket</p>' : '';
-        tickets.forEach(tickt => {
-            const ticktElement = document.createElement('a');
-            ticktElement.href = '#';
-            ticktElement.className = 'list-group-item list-group-item-action';
-            ticktElement.innerHTML = `
-                <div class="d-flex w-100 justify-content-between">
-                    <h6 class="mb-1">${tickt.title}</h6>
-                    <small>${tickt.date}</small>
+        ticketsContainer.innerHTML = tickets.length === 0 ? '<p class="text-muted p-4 text-center">Aucun ticket</p>' : '';
+        tickets.forEach(ticket => {
+            const statusClass = ticket.status === 'success' ? 'success' : ticket.status === 'warning' ? 'warning' : 'danger';
+            const statusIcon = ticket.status === 'success' ? 'check-circle' : ticket.status === 'warning' ? 'exclamation-triangle' : 'exclamation-circle';
+            
+            const ticketElement = document.createElement('div');
+            ticketElement.className = 'list-group-item list-group-item-action border-0 border-bottom';
+            ticketElement.innerHTML = `
+                <div class="d-flex align-items-start">
+                    <div class="me-3">
+                        <span class="badge bg-${statusClass}-subtle text-${statusClass} p-2 rounded-circle">
+                            <i class="bi bi-${statusIcon}"></i>
+                        </span>
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1 fw-semibold">${ticket.title}</h6>
+                            <small class="text-muted">${ticket.date}</small>
+                        </div>
+                        <p class="mb-1 text-muted small">${ticket.message}</p>
+                    </div>
                 </div>
-                <p class="mb-1">${tickt.message}</p>
             `;
-            ticketsContainer.appendChild(ticktElement);
+            ticketsContainer.appendChild(ticketElement);
         });
         document.getElementById('ticket-count').textContent = tickets.length;
     }
@@ -199,25 +302,40 @@ function generateOwnerTickets() {
 // Fonction pour générer des tickets factices pour les locataires
 function generateTenantTickets() {
     const tickets = [
-        { title: 'Paiement dû', date: 'dans 5 jours', message: 'Votre loyer est dû le 20 mars.' },
-        { title: 'Entretien prévu', date: 'il y a 2 jours', message: 'Un technicien passera le 18 mars pour une vérification.' }
+        { title: 'Paiement dû', date: 'dans 5 jours', message: 'Votre loyer est dû le 20 mars.', status: 'warning' },
+        { title: 'Entretien prévu', date: 'il y a 2 jours', message: 'Un technicien passera le 18 mars pour une vérification.', status: 'info' }
     ];
 
     const ticketsContainer = document.getElementById('tenant-tickets');
     if (ticketsContainer) {
-        ticketsContainer.innerHTML = tickets.length === 0 ? '<p class="text-muted">Aucun ticket</p>' : '';
-        tickets.forEach(tickt => {
-            const ticktElement = document.createElement('a');
-            ticktElement.href = '#';
-            ticktElement.className = 'list-group-item list-group-item-action';
-            ticktElement.innerHTML = `
-                <div class="d-flex w-100 justify-content-between">
-                    <h6 class="mb-1">${tickt.title}</h6>
-                    <small>${tickt.date}</small>
+        ticketsContainer.innerHTML = tickets.length === 0 ? '<p class="text-muted p-4 text-center">Aucun ticket</p>' : '';
+        tickets.forEach(ticket => {
+            const statusClass = ticket.status === 'success' ? 'success' : 
+                               ticket.status === 'warning' ? 'warning' : 
+                               ticket.status === 'danger' ? 'danger' : 'info';
+            const statusIcon = ticket.status === 'success' ? 'check-circle' : 
+                              ticket.status === 'warning' ? 'exclamation-triangle' : 
+                              ticket.status === 'danger' ? 'exclamation-circle' : 'info-circle';
+            
+            const ticketElement = document.createElement('div');
+            ticketElement.className = 'list-group-item list-group-item-action border-0 border-bottom';
+            ticketElement.innerHTML = `
+                <div class="d-flex align-items-start">
+                    <div class="me-3">
+                        <span class="badge bg-${statusClass}-subtle text-${statusClass} p-2 rounded-circle">
+                            <i class="bi bi-${statusIcon}"></i>
+                        </span>
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1 fw-semibold">${ticket.title}</h6>
+                            <small class="text-muted">${ticket.date}</small>
+                        </div>
+                        <p class="mb-1 text-muted small">${ticket.message}</p>
+                    </div>
                 </div>
-                <p class="mb-1">${tickt.message}</p>
             `;
-            ticketsContainer.appendChild(ticktElement);
+            ticketsContainer.appendChild(ticketElement);
         });
     }
 }
@@ -230,11 +348,11 @@ async function initDashboard() {
     }
 
     const user = getCurrentUser();
-    console.log("User info après correction:", user);
+    console.log("User info:", user);
 
     if (user) {
         document.getElementById('user-email').textContent = user.email;
-        document.getElementById('user-username').textContent = user.username || '';
+        document.getElementById('user-username').textContent = user.username || 'Utilisateur';
         const roleDisplay = user.role === 'owner' ? 'Propriétaire' : 'Locataire';
 
         document.getElementById('user-role').textContent = roleDisplay;
@@ -254,6 +372,20 @@ async function initDashboard() {
             generateTenantTickets();
         }
     }
+
+    // Ajouter une animation au survol des cartes
+    const cards = document.querySelectorAll('.feature-card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-10px)';
+            this.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.1)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = '0 6px 15px rgba(0, 0, 0, 0.08)';
+        });
+    });
 
     document.getElementById('logout-btn').addEventListener('click', function () {
         logout();
