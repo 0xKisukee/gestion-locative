@@ -81,6 +81,7 @@ function checkAuthStatus() {
     // Ne pas rediriger - juste mettre à jour l'interface utilisateur
     if (isLoggedIn()) {
         // User is logged in
+        console.log("connected");
         const user = getCurrentUser();
         
         // Masquer les boutons d'authentification
@@ -96,6 +97,7 @@ function checkAuthStatus() {
         if (userName) userName.textContent = user ? user.username : '';
     } else {
         // User is not logged in
+        console.log("not connected");
         
         // Afficher les boutons d'authentification
         if (authButtons) authButtons.style.display = 'block';
@@ -126,6 +128,15 @@ document.addEventListener('DOMContentLoaded', function () {
     // Add logout event listener if the button exists
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
-        logoutBtn.addEventListener('click', logout);
+        logoutBtn.addEventListener('click', () => {
+            logout();
+            window.location.href = 'login.html';
+        });
     }
+    
 });
+
+function clearLocalStorage() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+}
