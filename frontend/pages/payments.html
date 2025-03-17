@@ -29,9 +29,6 @@
         <div id="owner-payments-section">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="fw-bold">Mes Paiements</h2>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPaymentModal">
-                    <i class="bi bi-plus-circle me-2"></i>Enregistrer un paiement
-                </button>
             </div>
 
             <!-- Statistiques des paiements -->
@@ -161,62 +158,6 @@
                                 </tr>
                             </tbody>
                         </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal pour ajouter un paiement (réservé aux propriétaires) -->
-        <div class="modal fade" id="addPaymentModal" tabindex="-1" aria-labelledby="addPaymentModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="addPaymentModalLabel">Enregistrer un paiement</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="add-payment-form">
-                            <div class="mb-3">
-                                <label for="payment-tenant" class="form-label">Locataire</label>
-                                <select class="form-select" id="payment-tenant" required>
-                                    <option value="">Sélectionner...</option>
-                                    <!-- Options chargées dynamiquement -->
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="payment-property" class="form-label">Bien</label>
-                                <select class="form-select" id="payment-property" required>
-                                    <option value="">Sélectionner...</option>
-                                    <!-- Options chargées dynamiquement -->
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="payment-amount" class="form-label">Montant (€)</label>
-                                <input type="number" step="0.01" class="form-control" id="payment-amount" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="payment-date" class="form-label">Date de paiement</label>
-                                <input type="date" class="form-control" id="payment-date" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="payment-method" class="form-label">Méthode de paiement</label>
-                                <select class="form-select" id="payment-method" required>
-                                    <option value="">Sélectionner...</option>
-                                    <option value="bank_transfer">Virement bancaire</option>
-                                    <option value="check">Chèque</option>
-                                    <option value="cash">Espèces</option>
-                                    <option value="direct_debit">Prélèvement automatique</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="payment-notes" class="form-label">Notes</label>
-                                <textarea class="form-control" id="payment-notes" rows="2"></textarea>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                        <button type="button" class="btn btn-primary" id="save-payment-btn">Enregistrer</button>
                     </div>
                 </div>
             </div>
