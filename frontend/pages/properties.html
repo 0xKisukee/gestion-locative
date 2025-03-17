@@ -11,26 +11,30 @@
 </head>
 
 <body>
-    <div class="container">
-        <header class="py-3 mb-4 border-bottom shadow-sm">
+    <div class="container py-4">
+        <header class="py-3 mb-4 border-bottom shadow-sm bg-white rounded-3">
             <div class="d-flex align-items-center justify-content-between">
-                <div>
-                    <a href="dashboard.html" class="text-decoration-none">
-                        <h1 class="h4 fw-bold text-primary mb-0">Gestion Locative</h1>
-                    </a>
-                </div>
+                <a href="../index.html" class="text-decoration-none d-flex align-items-center">
+                    <i class="bi bi-building me-2 text-primary icon-header"></i>
+                    <h1 class="h4 mb-0 fw-bold text-primary">Gestion Locative</h1>
+                </a>
                 <div id="user-info" class="d-flex align-items-center">
-                    <span id="user-role" class="badge bg-primary me-2 d-flex align-items-center">Propriétaire</span>
-                    <span id="user-email" class="me-3 text-muted">utilisateur@exemple.com</span>
-                    <button id="logout-btn" class="btn btn-outline-danger btn-sm">Déconnexion</button>
+                    <div class="user-avatar-small me-2">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                    <span id="user-role" class="badge bg-primary me-2 py-2 px-3">Propriétaire</span>
+                    <span id="user-email" class="me-3 text-muted d-none d-md-inline">utilisateur@exemple.com</span>
+                    <button id="logout-btn" class="btn btn-outline-danger btn-sm action-btn">
+                        <i class="bi bi-box-arrow-right me-1"></i> Déconnexion
+                    </button>
                 </div>
             </div>
         </header>
 
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="fw-bold">Mes Biens</h2>
-            <button class="btn btn-primary btn-hover" data-bs-toggle="modal" data-bs-target="#addPropertyModal">
-                <i class="bi bi-plus-circle me-2"></i>Ajouter un bien
+            <h2 class="fw-bold text-primary"><i class="bi bi-house-door me-2"></i> Mes Biens</h2>
+            <button class="btn btn-primary action-btn" data-bs-toggle="modal" data-bs-target="#addPropertyModal">
+                <i class="bi bi-plus-circle me-2"></i> Ajouter un bien
             </button>
         </div>
 
@@ -43,67 +47,63 @@
         </div>
 
         <!-- Message d'erreur -->
-        <div id="error-message" class="alert alert-danger d-none" role="alert">
+        <div id="error-message" class="alert alert-danger d-none shadow-sm" role="alert">
             <i class="bi bi-exclamation-triangle-fill me-2"></i>
-            Impossible de charger vos biens. Veuillez réessayer plus tard.
+            <span id="error-text">Impossible de charger vos biens. Veuillez réessayer plus tard.</span>
         </div>
 
         <!-- Message si aucun bien -->
         <div id="no-properties-message" class="alert alert-info d-none shadow-sm" role="alert">
-            <i class="bi bi-info-circle me-2"></i>Vous n'avez encore aucun bien enregistré. Cliquez sur "Ajouter un
+            <i class="bi bi-info-circle me-2"></i> Vous n'avez encore aucun bien enregistré. Cliquez sur "Ajouter un
             bien" pour commencer.
         </div>
 
         <!-- Liste des biens chargés dynamiquement -->
-        <div id="properties-container" class="row g-4 mb-4">
-        </div>
+        <div id="properties-container" class="row g-4 mb-4"></div>
 
         <!-- Modal détails de propriété -->
         <div class="modal fade" id="propertyDetailsModal" tabindex="-1" aria-labelledby="propertyDetailsModalLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header bg-light">
-                        <h5 class="modal-title fw-bold" id="propertyDetailsModalLabel">Détails du bien</h5>
+                <div class="modal-content rounded-3 shadow">
+                    <div class="modal-header bg-primary bg-opacity-10 border-0">
+                        <h5 class="modal-title fw-bold text-primary" id="propertyDetailsModalLabel"><i
+                                class="bi bi-house-door me-2"></i> Détails du bien</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
                     </div>
-
                     <div class="modal-body" id="property-details-content">
                         <!-- Contenu chargé dynamiquement -->
                     </div>
-
-                    <div class="modal-footer justify-content-between">
+                    <div class="modal-footer justify-content-between bg-light border-0">
                         <div>
-                            <button type="button" class="btn btn-outline-success d-none" data-bs-toggle="modal"
-                                data-bs-target="#setTenantModal" id="edit-tenant-btn">
-                                <i class="bi bi-person-plus me-2"></i>Changer de locataire
-                            </button>
-                            <button type="button" class="btn btn-outline-danger d-none" data-bs-toggle="modal"
-                                data-bs-target="#setTenantModal" id="remove-tenant-btn">
-                                <i class="bi bi-person-dash me-2"></i>Retirer le locataire
+                            <button type="button" class="btn btn-outline-danger action-btn d-none"
+                                data-bs-toggle="modal" data-bs-target="#confirmRemoveTenantModal"
+                                id="start-remove-tenant-btn">
+                                <i class="bi bi-person-dash me-2"></i> Retirer le locataire
                             </button>
                         </div>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                        <button type="button" class="btn btn-secondary action-btn" data-bs-dismiss="modal"><i
+                                class="bi bi-x-circle me-1"></i> Fermer</button>
                     </div>
                 </div>
             </div>
         </div>
 
-
-        <!-- Add Property Modal -->
+        <!-- Modal Ajouter un bien -->
         <div class="modal fade" id="addPropertyModal" tabindex="-1" aria-labelledby="addPropertyModalLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header bg-light">
-                        <h5 class="modal-title fw-bold" id="addPropertyModalLabel">Ajouter un bien</h5>
+                <div class="modal-content rounded-3 shadow">
+                    <div class="modal-header bg-primary bg-opacity-10 border-0">
+                        <h5 class="modal-title fw-bold text-primary" id="addPropertyModalLabel"><i
+                                class="bi bi-plus-circle me-2"></i> Ajouter un bien</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <form id="add-property-form">
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label for="property-type" class="form-label">Type de bien</label>
+                                    <label for="property-type" class="form-label fw-semibold">Type de bien</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light"><i class="bi bi-house"></i></span>
                                         <select class="form-select" id="property-type" name="detail" required>
@@ -114,7 +114,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="property-surface" class="form-label">Surface (m²)</label>
+                                    <label for="property-surface" class="form-label fw-semibold">Surface (m²)</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light"><i class="bi bi-rulers"></i></span>
                                         <input type="number" class="form-control" id="property-surface" name="surface"
@@ -122,10 +122,9 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label for="property-address" class="form-label">Adresse</label>
+                                    <label for="property-address" class="form-label fw-semibold">Adresse</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light"><i class="bi bi-geo-alt"></i></span>
                                         <input type="text" class="form-control" id="property-address" name="address"
@@ -133,17 +132,16 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="property-city" class="form-label">Ville</label>
+                                    <label for="property-city" class="form-label fw-semibold">Ville</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light"><i class="bi bi-building"></i></span>
                                         <input type="text" class="form-control" id="property-city" name="city" required>
                                     </div>
                                 </div>
                             </div>
-
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label for="property-rent" class="form-label">Loyer mensuel (€)</label>
+                                    <label for="property-rent" class="form-label fw-semibold">Loyer mensuel (€)</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light"><i class="bi bi-cash"></i></span>
                                         <input type="number" class="form-control" id="property-rent" name="rent"
@@ -153,11 +151,11 @@
                             </div>
                         </form>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                        <button type="button" class="btn btn-primary" id="save-property-btn">
-                            <i class="bi bi-save me-2"></i>Enregistrer
-                        </button>
+                    <div class="modal-footer bg-light border-0">
+                        <button type="button" class="btn btn-secondary action-btn" data-bs-dismiss="modal"><i
+                                class="bi bi-x-circle me-1"></i> Annuler</button>
+                        <button type="button" class="btn btn-primary action-btn" id="save-property-btn"><i
+                                class="bi bi-save me-2"></i> Enregistrer</button>
                     </div>
                 </div>
             </div>
@@ -167,9 +165,10 @@
         <div class="modal fade" id="editPropertyModal" tabindex="-1" aria-labelledby="editPropertyModalLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header bg-light">
-                        <h5 class="modal-title fw-bold" id="editPropertyModalLabel">Modifier un bien</h5>
+                <div class="modal-content rounded-3 shadow">
+                    <div class="modal-header bg-primary bg-opacity-10 border-0">
+                        <h5 class="modal-title fw-bold text-primary" id="editPropertyModalLabel"><i
+                                class="bi bi-pencil-square me-2"></i> Modifier un bien</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -177,7 +176,7 @@
                             <input type="hidden" id="edit-property-id">
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label for="edit-property-type" class="form-label">Type de bien</label>
+                                    <label for="edit-property-type" class="form-label fw-semibold">Type de bien</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light"><i class="bi bi-house"></i></span>
                                         <select class="form-select" id="edit-property-type" name="detail" required>
@@ -188,7 +187,8 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="edit-property-surface" class="form-label">Surface (m²)</label>
+                                    <label for="edit-property-surface" class="form-label fw-semibold">Surface
+                                        (m²)</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light"><i class="bi bi-rulers"></i></span>
                                         <input type="number" class="form-control" id="edit-property-surface"
@@ -196,10 +196,9 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label for="edit-property-address" class="form-label">Adresse</label>
+                                    <label for="edit-property-address" class="form-label fw-semibold">Adresse</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light"><i class="bi bi-geo-alt"></i></span>
                                         <input type="text" class="form-control" id="edit-property-address"
@@ -207,7 +206,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="edit-property-city" class="form-label">Ville</label>
+                                    <label for="edit-property-city" class="form-label fw-semibold">Ville</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light"><i class="bi bi-building"></i></span>
                                         <input type="text" class="form-control" id="edit-property-city" name="city"
@@ -215,10 +214,10 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label for="edit-property-rent" class="form-label">Loyer mensuel (€)</label>
+                                    <label for="edit-property-rent" class="form-label fw-semibold">Loyer mensuel
+                                        (€)</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light"><i class="bi bi-cash"></i></span>
                                         <input type="number" class="form-control" id="edit-property-rent" name="rent"
@@ -228,33 +227,37 @@
                             </div>
                         </form>
                     </div>
-                    <div class="modal-footer d-flex">
-                        <button type="button" class="btn btn-danger" id="delete-property-btn">Supprimer le bien</button>
-                        <div class="ms-auto">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                            <button type="button" class="btn btn-primary" id="update-property-btn">
-                                <i class="bi bi-check-circle me-2"></i>Mettre à jour
-                            </button>
+                    <div class="modal-footer bg-light border-0 d-flex justify-content-between">
+                        <button type="button" class="btn btn-danger action-btn" id="delete-property-btn"><i
+                                class="bi bi-trash me-2"></i> Supprimer</button>
+                        <div>
+                            <button type="button" class="btn btn-secondary action-btn" data-bs-dismiss="modal"><i
+                                    class="bi bi-x-circle me-1"></i> Annuler</button>
+                            <button type="button" class="btn btn-primary action-btn" id="update-property-btn"><i
+                                    class="bi bi-check-circle me-2"></i> Mettre à jour</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Modal d'ajout de locataire -->
+        <!-- Permet l'identification de la property -->
+        <input type="hidden" id="tenant-property-id">
+
+        <!-- Modal Assignation de locataire -->
         <div class="modal fade" id="setTenantModal" tabindex="-1" aria-labelledby="setTenantModalLabel"
             aria-hidden="true">
             <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header bg-light">
-                        <h5 class="modal-title fw-bold" id="setTenantModalLabel">Assigner un locataire</h5>
+                <div class="modal-content rounded-3 shadow">
+                    <div class="modal-header bg-primary bg-opacity-10 border-0">
+                        <h5 class="modal-title fw-bold text-primary" id="setTenantModalLabel"><i
+                                class="bi bi-person-plus me-2"></i> Assigner un locataire</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <form id="set-tenant-form">
-                            <input type="hidden" id="set-tenant-property-id">
                             <div class="mb-3">
-                                <label for="tenant-id" class="form-label">ID du locataire</label>
+                                <label for="tenant-id" class="form-label fw-semibold">ID du locataire</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
                                     <input type="text" class="form-control" id="tenant-id" name="tenantId" required>
@@ -263,17 +266,63 @@
                             </div>
                         </form>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                        <button type="button" class="btn btn-primary" id="save-tenant-btn">
-                            <i class="bi bi-person-check me-2"></i>Assigner
+                    <div class="modal-footer bg-light border-0">
+                        <button type="button" class="btn btn-secondary action-btn" data-bs-dismiss="modal"><i
+                                class="bi bi-x-circle me-1"></i> Annuler</button>
+                        <button type="button" class="btn btn-primary action-btn" data-bs-toggle="modal"
+                            data-bs-target="#confirmAssignTenantModal" id="start-assign-tenant-btn">
+                            <i class="bi bi-person-check me-2"></i> Assigner
                         </button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <footer class="mt-5 py-3 text-center border-top text-muted bg-light">
+        <!-- Modal Confirmation d'Assignation de locataire -->
+        <div class="modal fade" id="confirmAssignTenantModal" tabindex="-1"
+            aria-labelledby="confirmAssignTenantModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content rounded-3 shadow">
+                    <div class="modal-header bg-primary bg-opacity-10 border-0">
+                        <h5 class="modal-title fw-bold text-primary" id="confirmAssignTenantModalLabel"><i
+                                class="bi bi-person-dash me-2"></i> Ajouter un locataire</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="confirm-assign-tenant-body">
+                    </div>
+                    <div class="modal-footer bg-light border-0">
+                        <button type="button" class="btn btn-secondary action-btn" data-bs-dismiss="modal"><i
+                                class="bi bi-x-circle me-1"></i> Annuler</button>
+                        <button type="button" class="btn btn-primary action-btn"
+                        id="confirm-assign-tenant-btn"><i class="bi bi-person-check me-2"></i> Confirmer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Confirmation de Suppression de locataire -->
+        <div class="modal fade" id="confirmRemoveTenantModal" tabindex="-1"
+            aria-labelledby="confirmRemoveTenantModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content rounded-3 shadow">
+                    <div class="modal-header bg-primary bg-opacity-10 border-0">
+                        <h5 class="modal-title fw-bold text-primary" id="confirmRemoveTenantModalLabel"><i
+                                class="bi bi-person-dash me-2"></i> Supprimer un locataire</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="confirm-remove-tenant-body">
+                    </div>
+                    <div class="modal-footer bg-light border-0">
+                        <button type="button" class="btn btn-secondary action-btn" data-bs-dismiss="modal"><i
+                                class="bi bi-x-circle me-1"></i> Annuler</button>
+                        <button type="button" class="btn btn-outline-danger action-btn"
+                            id="confirm-remove-tenant-btn"><i class="bi bi-person-check me-2"></i> Confirmer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-5 py-3 text-center border-top text-muted rounded-3 bg-white shadow-sm">
             <p class="mb-0">© 2025 Gestion Locative - Tous droits réservés</p>
         </footer>
     </div>
@@ -283,33 +332,6 @@
     <script src="../js/auth.js"></script>
     <script src="../js/main.js"></script>
     <script src="../js/properties.js"></script>
-    <script>
-        // Animations de hover pour les boutons
-        document.addEventListener('DOMContentLoaded', function () {
-            const buttons = document.querySelectorAll('.btn-hover');
-            buttons.forEach(button => {
-                button.addEventListener('mouseenter', function () {
-                    this.classList.add('shadow-sm');
-                });
-
-                button.addEventListener('mouseleave', function () {
-                    this.classList.remove('shadow-sm');
-                });
-            });
-
-            // Ajout d'animations pour les cartes de propriétés
-            const propertyCards = document.querySelectorAll('.hover-shadow');
-            propertyCards.forEach(card => {
-                card.addEventListener('mouseenter', function () {
-                    this.classList.add('shadow');
-                });
-
-                card.addEventListener('mouseleave', function () {
-                    this.classList.remove('shadow');
-                });
-            });
-        });
-    </script>
 </body>
 
 </html>
