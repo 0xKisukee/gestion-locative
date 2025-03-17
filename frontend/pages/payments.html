@@ -9,18 +9,24 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
 </head>
 <body>
-    <div class="container">
-        <header class="py-3 mb-4 border-bottom shadow-sm">
+    <div class="container py-4">
+        <header class="py-3 mb-4 border-bottom shadow-sm bg-white rounded-3">
             <div class="d-flex align-items-center justify-content-between">
                 <div>
-                    <a href="dashboard.html" class="text-decoration-none text-primary fw-bold">
-                        <h1 class="h4 mb-0">Gestion Locative</h1>
+                    <a href="dashboard.html" class="text-decoration-none d-flex align-items-center">
+                        <i class="bi bi-building me-2 text-primary icon-header"></i>
+                        <h1 class="h4 mb-0 fw-bold text-primary">Gestion Locative</h1>
                     </a>
                 </div>
                 <div id="user-info" class="d-flex align-items-center">
-                    <span id="user-role" class="badge bg-primary me-2 d-flex align-items-center">Propriétaire</span>
-                    <span id="user-email" class="me-3 text-muted"></span>
-                    <button id="logout-btn" class="btn btn-outline-danger btn-sm">Déconnexion</button>
+                    <div class="user-avatar-small me-2">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                    <span id="user-role" class="badge bg-primary me-2 py-2 px-3">Propriétaire</span>
+                    <span id="user-email" class="me-3 text-muted d-none d-md-inline"></span>
+                    <button id="logout-btn" class="btn btn-outline-danger btn-sm action-btn">
+                        <i class="bi bi-box-arrow-right me-1"></i> Déconnexion
+                    </button>
                 </div>
             </div>
         </header>
@@ -28,71 +34,92 @@
         <!-- Section Propriétaire -->
         <div id="owner-payments-section">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="fw-bold">Mes Paiements</h2>
+                <h2 class="fw-bold page-header">Mes Paiements</h2>
             </div>
 
             <!-- Statistiques des paiements -->
             <div class="row g-4 mb-4">
                 <div class="col-md-4">
-                    <div class="card text-center shadow-sm hover-shadow">
-                        <div class="card-body">
-                            <i class="bi bi-wallet fs-2 text-primary mb-2"></i>
-                            <h5 class="card-title text-primary">Loyers du mois</h5>
-                            <h2 class="display-6" id="total-rent">0 €</h2>
+                    <div class="card stat-card success-gradient border-0 h-100">
+                        <div class="card-body text-center p-4">
+                            <i class="bi bi-check-circle stat-icon"></i>
+                            <h5 class="stat-title text-white-50">Paiements reçus</h5>
+                            <h2 class="stat-value" id="paid-amount">0 €</h2>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="card text-center shadow-sm hover-shadow">
-                        <div class="card-body">
-                            <i class="bi bi-check-circle fs-2 text-success mb-2"></i>
-                            <h5 class="card-title text-success">Paiements reçus</h5>
-                            <h2 class="display-6" id="paid-amount">0 €</h2>
+                    <div class="card stat-card warning-gradient border-0 h-100">
+                        <div class="card-body text-center p-4">
+                            <i class="bi bi-wallet2 stat-icon"></i>
+                            <h5 class="stat-title text-white-50">En attente</h5>
+                            <h2 class="stat-value" id="pending-amount">0 €</h2>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="card text-center shadow-sm hover-shadow">
-                        <div class="card-body">
-                            <i class="bi bi-exclamation-circle fs-2 text-danger mb-2"></i>
-                            <h5 class="card-title text-danger">En attente</h5>
-                            <h2 class="display-6" id="pending-amount">0 €</h2>
+                    <div class="card stat-card danger-gradient border-0 h-100">
+                        <div class="card-body text-center p-4">
+                            <i class="bi bi-exclamation-circle stat-icon"></i>
+                            <h5 class="stat-title text-white-50">En retard</h5>
+                            <h2 class="stat-value" id="due-amount">0 €</h2>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Liste des paiements -->
-            <div class="card shadow-sm">
-                <div class="card-header bg-info text-white">
-                    Liste des paiements
+            <div class="card shadow-sm border-0 table-payments">
+                <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center py-3">
+                    <h5 class="mb-0 fw-bold text-primary">
+                        <i class="bi bi-list-ul me-2"></i> Liste des paiements
+                    </h5>
+                    <button class="btn btn-sm btn-outline-primary action-btn">
+                        <i class="bi bi-file-earmark-spreadsheet me-1"></i> Exporter
+                    </button>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-hover">
+                        <table class="table table-hover mb-0">
                             <thead>
                                 <tr>
-                                    <th>Référence</th>
+                                    <th class="ps-4">Référence</th>
                                     <th>Date d'échéance</th>
                                     <th>Locataire</th>
                                     <th>Bien</th>
                                     <th>Montant</th>
                                     <th>Statut</th>
-                                    <th>Actions</th>
+                                    <th class="text-end pe-4">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="owner-payments-table-body">
                                 <!-- Chargement dynamique -->
                                 <tr>
-                                    <td colspan="7" class="text-center">
+                                    <td colspan="7" class="text-center py-5">
                                         <div class="spinner-border text-primary" role="status">
                                             <span class="visually-hidden">Chargement...</span>
                                         </div>
+                                        <p class="text-muted mt-2">Chargement des paiements...</p>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
+                </div>
+                <div class="card-footer bg-white text-center">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center mb-0">
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1">Précédent</a>
+                            </li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="#">Suivant</a>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
             </div>
         </div>
@@ -100,70 +127,178 @@
         <!-- Section Locataire -->
         <div id="tenant-payments-section" class="d-none">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="fw-bold">Mes Paiements</h2>
+                <h2 class="fw-bold page-header">Mes Paiements</h2>
             </div>
 
-            <!-- Prochain paiement -->
+            <!-- Alerte de paiement -->
+            <div class="alert alert-warning d-flex align-items-center mb-4" role="alert">
+                <i class="bi bi-bell-fill me-2 fs-4"></i>
+                <div>
+                    <strong>Rappel :</strong> Votre prochain paiement est dû le <span id="next-payment-date-alert">10/04/2025</span>. 
+                    <a href="#bank-details-section" class="alert-link">Voir les coordonnées bancaires</a>
+                </div>
+            </div>
+
+            <!-- Statistiques et coordonnées bancaires -->
             <div class="row g-4 mb-4">
+                <!-- Statistiques -->
                 <div class="col-md-6">
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-warning text-white d-flex justify-content-between align-items-center">
-                            Prochain paiement
-                            <span class="badge bg-light text-warning" id="payment-status">À jour</span>
+                    <div class="card stat-card border-0 h-100 shadow-sm rounded-card">
+                        <div class="card-header bg-primary text-white py-3">
+                            <h5 class="mb-0"><i class="bi bi-graph-up me-2"></i> Mes statistiques de paiement</h5>
                         </div>
                         <div class="card-body">
-                            <p class="text-muted">Date : <span id="next-payment-date">--</span></p>
-                            <p class="text-muted">Montant : <span id="next-payment-amount">-- €</span></p>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="p-3 rounded-3 bg-light h-100">
+                                        <div class="d-flex align-items-center">
+                                            <div class="stat-icon-container bg-primary-light me-3">
+                                                <i class="bi bi-receipt text-primary fs-4"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="text-muted mb-1">Factures dues</h6>
+                                                <h3 class="mb-0 fw-bold" id="tenant-pending-count">--</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="p-3 rounded-3 bg-light h-100">
+                                        <div class="d-flex align-items-center">
+                                            <div class="stat-icon-container bg-success-light me-3">
+                                                <i class="bi bi-check-circle text-success fs-4"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="text-muted mb-1">Payés</h6>
+                                                <h3 class="mb-0 fw-bold" id="tenant-paid-count">--</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="d-flex align-items-center p-3 rounded-3 bg-danger-light">
+                                        <div class="stat-icon-container bg-danger-semi me-3">
+                                            <i class="bi bi-cash-coin text-danger fs-4"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="text-muted mb-1">Montant dû actuellement</h6>
+                                            <h2 class="mb-0 fw-bold text-danger" id="tenant-pending-amount">-- €</h2>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-info text-white">
-                            Statistiques
+                
+                <!-- Coordonnées bancaires -->
+                <div class="col-md-6" id="bank-details-section">
+                    <div class="card bank-details-card shadow-sm border-0 h-100">
+                        <div class="card-header bg-white border-bottom-0 pt-3 pb-0 ps-4">
+                            <h5 class="mb-0 text-primary fw-bold">
+                                <i class="bi bi-bank me-2"></i> Coordonnées bancaires
+                            </h5>
+                            <p class="text-muted mb-0 mt-1">Pour effectuer votre paiement</p>
                         </div>
-                        <div class="card-body text-center">
-                            <p><i class="bi bi-check-circle text-success"></i> Payés : <span id="tenant-paid-amount">0 €</span></p>
-                            <p><i class="bi bi-exclamation-circle text-danger"></i> En attente : <span id="tenant-pending-amount">0 €</span></p>
+                        <div class="card-body p-4">
+                            <div class="bank-detail-item">
+                                <div class="bank-detail-label">
+                                    <i class="bi bi-credit-card me-2 text-primary"></i> IBAN
+                                </div>
+                                <div class="bank-detail-value font-monospace" id="owner-iban">FR76 1234 5678 9101 1121 3141 516</div>
+                            </div>
+                            
+                            <div class="bank-detail-item">
+                                <div class="bank-detail-label">
+                                    <i class="bi bi-building me-2 text-primary"></i> BIC
+                                </div>
+                                <div class="bank-detail-value font-monospace" id="owner-bic">AGRIFPPP123</div>
+                            </div>
+                            
+                            <div class="bank-detail-item">
+                                <div class="bank-detail-label">
+                                    <i class="bi bi-person me-2 text-primary"></i> Titulaire
+                                </div>
+                                <div class="bank-detail-value" id="owner-name">SCI EXEMPLE</div>
+                            </div>
+                            
+                            <div class="alert alert-info mt-3">
+                                <div class="d-flex">
+                                    <i class="bi bi-info-circle-fill me-2 fs-5"></i>
+                                    <div>
+                                        <strong>Important :</strong> Veuillez indiquer la référence <span class="badge bg-primary px-2 py-1 payment-reference" id="payment-reference">REF-12345</span> lors de votre virement pour faciliter le traitement de votre paiement.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="alert alert-light border mt-3 mb-0">
+                                <i class="bi bi-calendar-check me-2"></i>
+                                <span class="text-muted">Prochain paiement dû le </span>
+                                <strong class="ms-1" id="next-payment-date">12/04/2025</strong>
+                                <span class="ms-1 text-muted">d'un montant de</span>
+                                <strong class="text-danger ms-1" id="next-payment-amount">750,00 €</strong>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Historique des paiements -->
-            <div class="card shadow-sm">
-                <div class="card-header bg-info text-white">
-                    Historique des paiements
+            <div class="card shadow-sm border-0 table-payments">
+                <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center py-3">
+                    <h5 class="mb-0 fw-bold text-primary">
+                        <i class="bi bi-clock-history me-2"></i> Historique des paiements
+                    </h5>
+                    <button class="btn btn-sm btn-outline-primary action-btn">
+                        <i class="bi bi-file-earmark-pdf me-1"></i> Télécharger
+                    </button>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-hover">
+                        <table class="table table-hover mb-0">
                             <thead>
                                 <tr>
-                                    <th>Référence</th>
+                                    <th class="ps-4">Référence</th>
                                     <th>Date d'échéance</th>
+                                    <th>Propriétaire</th>
                                     <th>Bien</th>
                                     <th>Montant</th>
-                                    <th>Statut</th>
+                                    <th class="pe-4">Statut</th>
                                 </tr>
                             </thead>
                             <tbody id="tenant-payments-table-body">
                                 <!-- Chargement dynamique -->
                                 <tr>
-                                    <td colspan="5" class="text-center">
+                                    <td colspan="6" class="text-center py-5">
                                         <div class="spinner-border text-primary" role="status">
                                             <span class="visually-hidden">Chargement...</span>
                                         </div>
+                                        <p class="text-muted mt-2">Chargement de l'historique...</p>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
+                <div class="card-footer bg-white text-center">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center mb-0">
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1">Précédent</a>
+                            </li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="#">Suivant</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
             </div>
         </div>
 
-        <footer class="mt-5 py-3 text-center border-top text-muted bg-light">
+        <footer class="mt-5 py-3 text-center border-top text-muted rounded-3 bg-white shadow-sm">
             <p class="mb-0">© 2025 Gestion Locative - Tous droits réservés</p>
         </footer>
     </div>
