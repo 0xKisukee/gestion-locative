@@ -1,99 +1,44 @@
-// Fonction pour obtenir le token d'authentification 
-function getToken() {
-    return localStorage.getItem('token');
-}
-
-// Fonction pour récupérer les propriétés avec des locataires
+// Fonction pour récupérer les locataires attribués aux propriétés de l'utilisateur connecté
 async function fetchTenantsFromProperties() {
     try {
-        // Afficher le spinner de chargement
-        document.getElementById('loading-spinner').classList.remove('d-none');
-        document.getElementById('error-message').classList.add('d-none');
-        document.getElementById('no-tenants-message').classList.add('d-none');
-        document.getElementById('tenants-table-container').classList.add('d-none');
-
-        // Récupérer toutes les propriétés du propriétaire
-        const response = await fetch('/api/property/getMyProperties', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${getToken()}`,
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error('Erreur lors de la récupération des propriétés');
+        const properties = await apiCall('/api/property/getMyProperties');
+        if (!Array.isArray(properties)) {
+            throw new Error('Réponse invalide du serveur');
         }
 
-        const properties = await response.json();
-        
-        // Filtrer les propriétés qui ont un locataire (status = 'rented')
-        const propertiesWithTenants = properties.filter(property => property.status === 'rented');
-        
-        // Si aucune propriété avec locataire, afficher le message "aucun locataire"
+        const propertiesWithTenants = properties.filter(property => property.status === 'rented' && property.tenant);
+
         if (propertiesWithTenants.length === 0) {
-            document.getElementById('loading-spinner').classList.add('d-none');
-            document.getElementById('no-tenants-message').classList.remove('d-none');
             return [];
         }
 
-        // Pour chaque propriété avec locataire, récupérer les détails du locataire
-        const tenantDetailsPromises = propertiesWithTenants.map(async property => {
-            try {
-                // Récupérer les détails de la propriété incluant le locataire
-                const detailsResponse = await fetch(`/api/property/getInfos/${property.id}`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${getToken()}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (!detailsResponse.ok) {
-                    console.error(`Erreur lors de la récupération des détails de la propriété ${property.id}`);
-                    return null;
-                }
-
-                const detailedProperty = await detailsResponse.json();
-                
-                // S'assurer que la propriété a bien un locataire
-                if (!detailedProperty.tenant) {
-                    console.warn(`La propriété ${property.id} n'a pas de locataire, malgré son statut 'rented'`);
-                    return null;
-                }
-
-                // Retourner un objet contenant les informations du locataire et de la propriété
-                return {
-                    tenant: detailedProperty.tenant,
-                    property: {
-                        id: detailedProperty.id,
-                        detail: detailedProperty.detail,
-                        address: detailedProperty.address,
-                        city: detailedProperty.city,
-                        rent: detailedProperty.rent,
-                        surface: detailedProperty.surface
-                    }
-                };
-            } catch (error) {
-                console.error(`Erreur lors de la récupération des détails du locataire pour la propriété ${property.id}:`, error);
-                return null;
+        return propertiesWithTenants.map(property => ({
+            tenant: property.tenant,
+            property: {
+                id: property.id,
+                detail: property.detail,
+                address: property.address,
+                city: property.city,
+                rent: property.rent,
+                surface: property.surface
             }
-        });
-
-        // Attendre toutes les promesses de récupération des détails des locataires
-        const results = await Promise.all(tenantDetailsPromises);
-        
-        // Filtrer les résultats null (erreurs)
-        const tenantsWithProperties = results.filter(result => result !== null);
-
-        // Masquer le spinner de chargement
-        document.getElementById('loading-spinner').classList.add('d-none');
-        
-        return tenantsWithProperties;
+        }));
     } catch (error) {
-        console.error('Erreur:', error);
-        document.getElementById('loading-spinner').classList.add('d-none');
+        console.error('Erreur dans fetchTenantsFromProperties:', error);
+        document.getElementById('error-text').textContent = error.message || 'Impossible de charger vos locataires.';
         document.getElementById('error-message').classList.remove('d-none');
+        return [];
+    } finally {
+        document.getElementById('loading-spinner').classList.add('d-none');
+    }
+}
+
+// Fonction pour supprimer un locataire d'une propriété
+async function removeTenantFromProperty(propertyId) {
+    try {
+        await apiCall(`/api/property/${propertyId}/removeTenant`, 'PATCH');
+    } catch (error) {
+        console.error('Erreur lors de la suppression du locataire:', error);
         throw error;
     }
 }
@@ -102,168 +47,165 @@ async function fetchTenantsFromProperties() {
 function displayTenants(tenantsWithProperties) {
     const tableBody = document.getElementById('tenants-table-body');
     const tenantCount = document.getElementById('tenants-count');
-    
-    // Vider le tableau
     tableBody.innerHTML = '';
-    
-    // Mettre à jour le compteur de locataires
     tenantCount.textContent = tenantsWithProperties.length;
-    
-    // Si aucun locataire, afficher le message et cacher le tableau
+
     if (tenantsWithProperties.length === 0) {
         document.getElementById('no-tenants-message').classList.remove('d-none');
         document.getElementById('tenants-table-container').classList.add('d-none');
         return;
     }
-    
-    // Sinon, afficher le tableau et cacher le message
+
     document.getElementById('no-tenants-message').classList.add('d-none');
     document.getElementById('tenants-table-container').classList.remove('d-none');
-    
-    // Créer une ligne pour chaque locataire
+
     tenantsWithProperties.forEach(item => {
         const { tenant, property } = item;
-        
-        // Format du bien (Appartement/Maison + Ville)
         const propertyType = property.detail === 'apartment' ? 'Appartement' : 'Maison';
-        const propertyText = `${propertyType} - ${property.address}`;
-        
-        // Téléphone (afficher une valeur par défaut si non défini)
+        const propertyText = `${propertyType} - ${property.address}, ${property.city}`;
         const phoneText = tenant.phone || 'Non renseigné';
-        
-        // Créer la ligne
+
         const row = document.createElement('tr');
+        row.className = 'feature-row';
         row.innerHTML = `
             <td>${tenant.username}</td>
             <td>${tenant.email}</td>
             <td>${phoneText}</td>
             <td>${propertyText}</td>
-            <td><span class="badge bg-success">Actif</span></td>
+            <td><span class="badge bg-success py-2 px-3">Actif</span></td>
             <td>
                 <div class="btn-group">
-                    <button class="btn btn-sm btn-outline-primary btn-view-tenant" data-tenant-id="${tenant.id}" data-property-id="${property.id}">
+                    <button class="btn btn-sm btn-outline-primary action-btn btn-view-tenant" data-tenant-id="${tenant.id}" data-property-id="${property.id}" title="Voir détails">
                         <i class="bi bi-eye"></i>
                     </button>
-                    <button class="btn btn-sm btn-outline-secondary btn-edit-tenant" data-tenant-id="${tenant.id}">
-                        <i class="bi bi-pencil"></i>
-                    </button>
-                    <button class="btn btn-sm btn-outline-danger btn-delete-tenant" data-tenant-id="${tenant.id}">
-                        <i class="bi bi-trash"></i>
+                    <button class="btn btn-sm btn-outline-danger action-btn btn-delete-tenant" data-property-id="${property.id}" title="Retirer locataire">
+                        <i class="bi bi-person-dash"></i>
                     </button>
                 </div>
             </td>
         `;
-        
         tableBody.appendChild(row);
     });
-    
-    // Attacher les gestionnaires d'événements aux boutons d'action
+
     attachEventListeners();
 }
 
 // Fonction pour afficher les détails d'un locataire
 function showTenantDetails(tenant, property) {
     const modalBody = document.getElementById('tenant-details-content');
-    
-    // Formater les informations de la propriété
     const propertyType = property.detail === 'apartment' ? 'Appartement' : 'Maison';
-    
-    // Créer le contenu HTML
+
     const html = `
-        <div class="mb-4">
-            <h6 class="fw-bold">Informations du locataire</h6>
-            <p><strong>Nom:</strong> ${tenant.username}</p>
-            <p><strong>Email:</strong> ${tenant.email}</p>
-            <p><strong>Téléphone:</strong> ${tenant.phone || 'Non renseigné'}</p>
-        </div>
-        <div>
-            <h6 class="fw-bold">Bien loué</h6>
-            <p><strong>Type:</strong> ${propertyType}</p>
-            <p><strong>Adresse:</strong> ${property.address}, ${property.city}</p>
-            <p><strong>Surface:</strong> ${property.surface} m²</p>
-            <p><strong>Loyer mensuel:</strong> ${property.rent} €</p>
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <h6 class="fw-bold text-primary"><i class="bi bi-person me-2"></i> Informations du locataire</h6>
+                <p><strong>Nom :</strong> ${tenant.username}</p>
+                <p><strong>Email :</strong> ${tenant.email}</p>
+                <p><strong>Téléphone :</strong> ${tenant.phone || 'Non renseigné'}</p>
+            </div>
+            <div class="col-md-6">
+                <h6 class="fw-bold text-primary"><i class="bi bi-house-door me-2"></i> Bien loué</h6>
+                <p><strong>Type :</strong> ${propertyType}</p>
+                <p><strong>Adresse :</strong> ${property.address}, ${property.city}</p>
+                <p><strong>Surface :</strong> ${property.surface} m²</p>
+                <p><strong>Loyer mensuel :</strong> ${property.rent} €</p>
+            </div>
         </div>
     `;
-    
+
     modalBody.innerHTML = html;
-    
-    // Afficher le modal
     const modal = new bootstrap.Modal(document.getElementById('tenantDetailsModal'));
     modal.show();
 }
 
 // Fonction pour attacher les gestionnaires d'événements
 function attachEventListeners() {
-    // Gestionnaires pour les boutons "Voir détails"
     document.querySelectorAll('.btn-view-tenant').forEach(button => {
-        button.addEventListener('click', async function() {
-            const tenantId = this.getAttribute('data-tenant-id');
-            const propertyId = this.getAttribute('data-property-id');
-            
+        button.addEventListener('click', async () => {
+            const tenantId = button.getAttribute('data-tenant-id');
+            const propertyId = button.getAttribute('data-property-id');
             try {
-                // Récupérer les détails de la propriété (qui inclut le locataire)
-                const response = await fetch(`/api/property/getInfos/${propertyId}`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${getToken()}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error('Erreur lors de la récupération des détails');
-                }
-                
-                const propertyWithTenant = await response.json();
-                
-                // Afficher les détails
-                showTenantDetails(propertyWithTenant.tenant, propertyWithTenant);
+                const property = await apiCall(`/api/property/getInfos/${propertyId}`);
+                showTenantDetails(property.tenant, property);
             } catch (error) {
                 console.error('Erreur:', error);
-                alert('Impossible de charger les détails du locataire.');
+                alert('Impossible de charger les détails du locataire : ' + (error.message || 'Erreur inconnue'));
             }
         });
     });
-    
-    // Note: Pour les boutons d'édition et de suppression, nous laissons les fonctionnalités fictives pour l'instant
-    document.querySelectorAll('.btn-edit-tenant, .btn-delete-tenant').forEach(button => {
-        button.addEventListener('click', function() {
-            const tenantId = this.getAttribute('data-tenant-id');
-            const action = this.classList.contains('btn-edit-tenant') ? 'modifier' : 'supprimer';
-            alert(`Fonctionnalité pour ${action} le locataire (ID: ${tenantId}) non implémentée.`);
+
+    document.querySelectorAll('.btn-delete-tenant').forEach(button => {
+        button.addEventListener('click', async () => {
+            const propertyId = button.getAttribute('data-property-id');
+            if (confirm('Êtes-vous sûr de vouloir retirer ce locataire de la propriété ?')) {
+                try {
+                    await removeTenantFromProperty(propertyId);
+                    initTenantsPage(); // Rafraîchir la liste
+                } catch (error) {
+                    alert('Erreur lors du retrait du locataire : ' + (error.message || 'Erreur inconnue'));
+                }
+            }
+        });
+    });
+
+    const rows = document.querySelectorAll('.feature-row');
+    rows.forEach(row => {
+        row.addEventListener('mouseenter', function () {
+            this.style.transform = 'translateY(-5px)';
+            this.style.boxShadow = '0 6px 15px rgba(0, 0, 0, 0.1)';
+        });
+        row.addEventListener('mouseleave', function () {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = 'none';
         });
     });
 }
 
-// Fonction d'initialisation
+// Initialisation de la page
 async function initTenantsPage() {
-    // Vérifier si l'utilisateur est connecté
+    console.log('Début de initTenantsPage');
+
     if (!isLoggedIn()) {
+        console.log('Non connecté - Redirection');
         window.location.href = 'login.html';
         return;
     }
-    
-    // Afficher les informations de l'utilisateur
+
     const user = getCurrentUser();
-    if (user) {
-        document.getElementById('user-email').textContent = user.email;
-        document.getElementById('user-role').textContent = user.role === 'owner' ? 'Propriétaire' : 'Locataire';
-    }
-    
-    // Gérer la déconnexion
-    document.getElementById('logout-btn').addEventListener('click', function() {
+    if (!user) {
+        console.log('Utilisateur introuvable - Déconnexion');
         logout();
-        window.location.href = 'login.html';
-    });
-    
+        return;
+    }
+
+    if (!hasRole('owner')) {
+        console.log('Non propriétaire - Redirection');
+        alert('Accès réservé aux propriétaires.');
+        window.location.href = 'dashboard.html';
+        return;
+    }
+
+    console.log('Utilisateur:', user.email);
+    document.getElementById('user-email').textContent = user.email;
+    document.getElementById('user-role').textContent = 'Propriétaire';
+
+    checkTokenExpiration();
+
     try {
-        // Récupérer et afficher les locataires
         const tenantsWithProperties = await fetchTenantsFromProperties();
         displayTenants(tenantsWithProperties);
     } catch (error) {
-        console.error('Erreur lors de l\'initialisation de la page:', error);
+        console.error('Erreur dans initTenantsPage:', error);
     }
 }
 
-// Initialiser la page au chargement du document
-document.addEventListener('DOMContentLoaded', initTenantsPage);
+// Gestion des événements
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM chargé');
+    initTenantsPage();
+
+    document.getElementById('logout-btn').addEventListener('click', () => {
+        logout();
+        window.location.href = 'login.html';
+    });
+});
