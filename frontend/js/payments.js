@@ -75,7 +75,7 @@ async function loadOwnerPayments() {
                         `<button class="btn btn-sm btn-primary action-btn record-payment-btn" data-payment-id="${payment.id}">
                                 <i class="bi bi-check2-circle me-1"></i>Marquer comme payé
                             </button>` :
-                        `<span class="text-success"><i class="bi bi-check-circle-fill me-1"></i>Complet</span>`
+                        `<span class="text-success"><i class="bi bi-check-circle-fill me-1"></i>Payé</span>`
                     }
                     </td>
                 `;
