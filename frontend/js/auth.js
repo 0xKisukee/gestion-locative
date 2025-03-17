@@ -129,8 +129,3 @@ document.addEventListener('DOMContentLoaded', function () {
         logoutBtn.addEventListener('click', logout);
     }
 });
-
-function clearLocalStorage() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-}
