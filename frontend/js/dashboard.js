@@ -47,13 +47,11 @@ async function loadOwnerDashboard() {
         if (!paymentsResponse.ok) {
             const errorText = await paymentsResponse.text();
             console.error('Erreur de l\'API:', errorText);
-            throw new Error(`Erreur lors du chargement des propriétés: ${paymentsResponse.status} ${paymentsResponse.statusText}`);
+            throw new Error(`Erreur lors du chargement des paiements: ${paymentsResponse.status} ${paymentsResponse.statusText}`);
         }
 
         const properties = await propertiesResponse.json();
         const payments = await paymentsResponse.json();
-        console.log('Propriétés chargées:', properties);
-        console.log('Paiements chargés:', payments);
 
         // Filtrer les propriétés avec locataires (status rented)
         const propertiesWithTenants = properties.filter(prop => prop.status === 'rented');
@@ -93,7 +91,7 @@ async function loadOwnerDashboard() {
             animateCounter(tenantsCount, propertiesWithTenants.length);
         }
 
-        // À adapter avec données réelles des paiements en retard
+        // Données réelles des paiements en retard
         const duePayments = payments.filter(pay => pay.status === 'due');
         if (duePaymentsCount) animateCounter(duePaymentsCount, duePayments.length);
 
@@ -140,7 +138,7 @@ async function loadTenantDashboard() {
     try {
         const propertyInfoElement = document.getElementById('tenant-property-info');
 
-        const response = await fetch('/api/user/myProperty', {
+        const propertyResponse = await fetch('/api/user/myProperty', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${getToken()}`,
@@ -148,7 +146,7 @@ async function loadTenantDashboard() {
             }
         });
 
-        if (response.status === 404) {
+        if (propertyResponse.status === 404) {
             propertyInfoElement.innerHTML = `
                 <div class="alert alert-info">
                     <i class="bi bi-info-circle me-2"></i> Vous n'avez actuellement aucune location active.
@@ -161,12 +159,12 @@ async function loadTenantDashboard() {
             return;
         }
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Erreur lors du chargement des informations de location: ${response.status} - ${errorText}`);
+        if (!propertyResponse.ok) {
+            const errorText = await propertyResponse.text();
+            throw new Error(`Erreur lors du chargement des informations de location: ${propertyResponse.status} - ${errorText}`);
         }
 
-        const property = await response.json();
+        const property = await propertyResponse.json();
         const propertyType = property.detail === 'apartment' ? 'Appartement' : 'Maison';
 
         propertyInfoElement.innerHTML = `
@@ -231,14 +229,42 @@ async function loadTenantDashboard() {
             </div>
         `;
 
-        // Exemple fictif pour les paiements (à remplacer par une API réelle)
-        document.getElementById('next-payment-date').textContent = '20 mars 2025'; // À adapter
+        const paymentsResponse = await fetch('/api/user/myPayments', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${getToken()}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!paymentsResponse.ok) {
+            const errorText = await paymentsResponse.text();
+            console.error('Erreur de l\'API:', errorText);
+            throw new Error(`Erreur lors du chargement des paiements: ${paymentsResponse.status} ${paymentsResponse.statusText}`);
+        }
+
+        const payments = await paymentsResponse.json();
+        const duePaymentsCounter = payments.filter(pay => pay.status === 'due').length;
+
+        // Infos du prochain loyer
+        const today = new Date();
+        const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        document.getElementById('next-payment-date').textContent = lastDayOfMonth.toLocaleDateString('fr-FR'); // À adapter
         document.getElementById('next-payment-amount').textContent = `${property.rent} €`; // OK
         
         // Mettre à jour le statut de paiement avec une couleur appropriée
         const paymentStatus = document.getElementById('payment-status');
-        paymentStatus.textContent = 'À jour';
-        paymentStatus.className = 'badge bg-success rounded-pill px-3 py-2';
+
+        if (duePaymentsCounter == 0) {
+            paymentStatus.textContent = 'À jour';
+            paymentStatus.className = 'badge bg-success rounded-pill px-3 py-2';
+        } else if (duePaymentsCounter == 1) {
+            paymentStatus.textContent = 'Paiement en attente';
+            paymentStatus.className = 'badge bg-warning rounded-pill px-3 py-2';
+        } else if (duePaymentsCounter > 1) {
+            paymentStatus.textContent = 'Situation à régulariser';
+            paymentStatus.className = 'badge bg-danger rounded-pill px-3 py-2';
+        }
         
     } catch (error) {
         console.error('Erreur lors du chargement de la location:', error);
