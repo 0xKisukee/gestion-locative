@@ -41,9 +41,9 @@ async function deleteProperty(propertyId) {
     }
 }
 
-async function assignTenant(propertyId, tenantId) {
+async function assignTenant(propertyId, tenantId, entryDate) {
     try {
-        return await apiCall(`/api/property/${propertyId}/setTenant/${tenantId}`, 'PATCH');
+        return await apiCall(`/api/property/${propertyId}/setTenant/${tenantId}`, 'PATCH', { entryDate });
     } catch (error) {
         alert('Erreur lors de l\'assignation : ' + (error.message || 'Veuillez réessayer.'));
         throw error;
@@ -352,14 +352,14 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('confirm-assign-tenant-btn').addEventListener('click', async () => {
         const propertyId = document.getElementById('tenant-property-id').value;
         const form = document.getElementById('set-tenant-form');
-        console.log(form)
         if (!form.checkValidity()) {
             form.reportValidity();
             return;
         }
         const tenantId = document.getElementById('tenant-id').value;
+        const entryDate = document.getElementById('entry-date').value;
         try {
-            await assignTenant(propertyId, tenantId);
+            await assignTenant(propertyId, tenantId, entryDate);
             bootstrap.Modal.getInstance(document.getElementById('confirmAssignTenantModal')).hide();
             form.reset();
             initPropertiesPage();
