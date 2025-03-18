@@ -35,7 +35,7 @@ const Payment = sequelize.define('Payment', {
       key: 'id'
     }
   },
-  propertyId: {
+  propertyId: { // remove this ???
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
@@ -63,7 +63,8 @@ const Payment = sequelize.define('Payment', {
   }
 }, {
   tableName: 'payments',
-  timestamps: false,
+  createdAt: true,
+  updatedAt: false
 });
 
 module.exports = Payment;

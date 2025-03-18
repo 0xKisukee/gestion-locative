@@ -56,7 +56,8 @@ const Property = sequelize.define('Property', {
   }
 }, {
   tableName: 'properties',
-  timestamps: false,
+  createdAt: true,
+  updatedAt: false
 });
 
 // Verify owner hook at creation
