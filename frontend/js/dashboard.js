@@ -260,7 +260,7 @@ async function loadTenantDashboard() {
             paymentStatus.className = 'badge bg-success rounded-pill px-3 py-2';
         } else if (duePaymentsCounter == 1) {
             paymentStatus.textContent = 'Paiement en attente';
-            paymentStatus.className = 'badge bg-warning rounded-pill px-3 py-2';
+            paymentStatus.className = 'badge bg-danger rounded-pill px-3 py-2';
         } else if (duePaymentsCounter > 1) {
             paymentStatus.textContent = 'Situation à régulariser';
             paymentStatus.className = 'badge bg-danger rounded-pill px-3 py-2';
