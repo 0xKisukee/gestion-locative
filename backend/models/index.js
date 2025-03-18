@@ -2,6 +2,8 @@
 const User = require('./user.model');
 const Property = require('./property.model');
 const Payment = require('./payment.model');
+const Ticket = require('./ticket.model');
+const Message = require('./message.model');
 
 // A tenant can only have one property
 User.hasOne(Property, {
@@ -68,9 +70,25 @@ Payment.belongsTo(Property, {
   constraints: false // to verify
 });
 
+// Ticket associations
+Ticket.belongsTo(User, { as: 'tenant', foreignKey: 'tenantId' });
+Ticket.belongsTo(User, { as: 'owner', foreignKey: 'ownerId' });
+Ticket.belongsTo(Property, { foreignKey: 'propertyId' });
+Ticket.hasMany(Message, { foreignKey: 'ticketId' });
+
+// Message associations
+Message.belongsTo(Ticket, { foreignKey: 'ticketId' });
+Message.belongsTo(User, { foreignKey: 'userId' });
+
+// User associations to tickets
+User.hasMany(Ticket, { as: 'tenantTickets', foreignKey: 'tenantId' });
+User.hasMany(Ticket, { as: 'ownerTickets', foreignKey: 'ownerId' });
+
 // Export all models
 module.exports = {
   User,
   Property,
   Payment,
+  Ticket,
+  Message
 };
