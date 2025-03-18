@@ -5,6 +5,7 @@ const cors = require('cors');
 // Import routes
 const userRoutes = require('./routes/user.route');
 const propertyRoutes = require('./routes/property.route');
+const ticketRoutes = require('./routes/ticket.route');
 
 // Import database
 const sequelize = require('./database');
@@ -32,6 +33,7 @@ app.use(express.static('../frontend'));
 // Routes
 app.use('/api/user', userRoutes);
 app.use('/api/property', propertyRoutes);
+app.use('/api/ticket', ticketRoutes);
 
 // Base route
 app.get('/', (req, res) => {
