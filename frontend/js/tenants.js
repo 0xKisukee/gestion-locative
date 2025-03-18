@@ -100,16 +100,14 @@ function displayTenants(tenantsWithProperties) {
 
         // Determine status badge
         let statusBadge;
-        let statusTooltip;
-        if (payments.due > 0) {
+        if (payments.due == 1) {
             statusBadge = '<span class="badge bg-danger py-2 px-3">En retard</span>';
-            statusTooltip = `${payments.due} paiement(s) en retard`;
+        } else if (payments.due > 1) {
+            statusBadge = '<span class="badge bg-danger py-2 px-3">À régulariser</span>';
         } else if (payments.incoming > 0) {
-            statusBadge = '<span class="badge bg-warning py-2 px-3">À venir</span>';
-            statusTooltip = `${payments.incoming} paiement(s) à venir`;
+            statusBadge = '<span class="badge bg-warning py-2 px-3">Paiements à venir</span>';
         } else {
             statusBadge = '<span class="badge bg-success py-2 px-3">À jour</span>';
-            statusTooltip = 'À jour';
         }
 
         const row = document.createElement('tr');
@@ -120,7 +118,7 @@ function displayTenants(tenantsWithProperties) {
             <td>${phoneText}</td>
             <td>${propertyText}</td>
             <td>
-                <div class="d-inline-block" data-bs-placement="top" title="${statusTooltip}">
+                <div class="d-inline-block" data-bs-placement="top">
                     ${statusBadge}
                 </div>
             </td>
