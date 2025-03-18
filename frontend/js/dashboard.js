@@ -137,6 +137,13 @@ async function loadOwnerDashboard() {
 async function loadTenantDashboard() {
     try {
         const propertyInfoElement = document.getElementById('tenant-property-info');
+        const user = getCurrentUser();
+
+        // Display tenant ID
+        const tenantIdElement = document.getElementById('tenant-id');
+        if (tenantIdElement && user) {
+            tenantIdElement.textContent = user.id;
+        }
 
         const propertyResponse = await fetch('/api/user/myProperty', {
             method: 'GET',
@@ -286,83 +293,131 @@ async function loadTenantDashboard() {
 }
 
 // Fonction pour générer les tickets
-function generateOwnerTickets() {
-    // fake tickets for tests
-    const tickets = [
-        { title: 'Paiement reçu', date: 'il y a 3 jours', message: 'Le loyer pour l\'appartement rue de Paris a été reçu.', status: 'success' },
-        { title: 'Contrat à renouveler', date: 'il y a 1 semaine', message: 'Le contrat de location pour l\'appartement rue du Commerce arrive à échéance.', status: 'warning' },
-        { title: 'Demande de réparation', date: 'il y a 2 semaines', message: 'Un locataire a signalé un problème de plomberie.', status: 'danger' }
-    ];
+async function generateOwnerTickets() {
+    try {
+        const response = await fetch('/api/ticket/myTickets', {
+            headers: {
+                'Authorization': `Bearer ${getToken()}`
+            }
+        });
 
-    const ticketsContainer = document.getElementById('owner-tickets');
-    if (ticketsContainer) {
-        ticketsContainer.innerHTML = tickets.length === 0 ? '<p class="text-muted p-4 text-center">Aucun ticket</p>' : '';
-        tickets.forEach(ticket => {
-            const statusClass = ticket.status === 'success' ? 'success' : ticket.status === 'warning' ? 'warning' : 'danger';
-            const statusIcon = ticket.status === 'success' ? 'check-circle' : ticket.status === 'warning' ? 'exclamation-triangle' : 'exclamation-circle';
-            
-            const ticketElement = document.createElement('div');
-            ticketElement.className = 'list-group-item list-group-item-action border-0 border-bottom';
-            ticketElement.innerHTML = `
-                <div class="d-flex align-items-start">
-                    <div class="me-3">
-                        <span class="badge bg-${statusClass}-subtle text-${statusClass} p-2 rounded-circle">
-                            <i class="bi bi-${statusIcon}"></i>
-                        </span>
-                    </div>
-                    <div class="flex-grow-1">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h6 class="mb-1 fw-semibold">${ticket.title}</h6>
-                            <small class="text-muted">${ticket.date}</small>
+        if (!response.ok) {
+            throw new Error('Erreur lors du chargement des tickets');
+        }
+
+        const tickets = await response.json();
+        const ticketsContainer = document.getElementById('owner-tickets');
+        const ticketCountElement = document.getElementById('ticket-count');
+
+        if (ticketsContainer) {
+            // Update ticket count with number of opened tickets
+            const openedTicketsCount = tickets.filter(ticket => ticket.status === 'opened').length;
+            if (ticketCountElement) {
+                ticketCountElement.textContent = openedTicketsCount;
+            }
+
+            if (tickets.length === 0) {
+                ticketsContainer.innerHTML = '<p class="text-muted p-4 text-center">Aucun ticket</p>';
+                return;
+            }
+
+            ticketsContainer.innerHTML = '';
+            tickets.forEach(ticket => {
+                const statusClass = ticket.status === 'opened' ? 'success' : 'secondary';
+                const statusIcon = ticket.status === 'opened' ? 'check-circle' : 'x-circle';
+                
+                const ticketElement = document.createElement('div');
+                ticketElement.className = 'list-group-item list-group-item-action border-0 border-bottom';
+                ticketElement.innerHTML = `
+                    <div class="d-flex align-items-start">
+                        <div class="me-3">
+                            <span class="badge bg-${statusClass}-subtle text-${statusClass} p-2 rounded-circle">
+                                <i class="bi bi-${statusIcon}"></i>
+                            </span>
                         </div>
-                        <p class="mb-1 text-muted small">${ticket.message}</p>
+                        <div class="flex-grow-1">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1 fw-semibold">${ticket.category}</h6>
+                                <small class="text-muted">${new Date(ticket.updatedAt).toLocaleDateString('fr-FR')}</small>
+                            </div>
+                            <p class="mb-1 text-muted small">${ticket.description}</p>
+                        </div>
                     </div>
+                `;
+                ticketsContainer.appendChild(ticketElement);
+            });
+        }
+    } catch (error) {
+        console.error('Erreur lors du chargement des tickets:', error);
+        const ticketsContainer = document.getElementById('owner-tickets');
+        if (ticketsContainer) {
+            ticketsContainer.innerHTML = `
+                <div class="alert alert-danger m-3">
+                    <i class="bi bi-exclamation-triangle me-2"></i> Impossible de charger les tickets: ${error.message}
                 </div>
             `;
-            ticketsContainer.appendChild(ticketElement);
-        });
-        document.getElementById('ticket-count').textContent = tickets.length;
+        }
     }
 }
 
-// Fonction pour générer des tickets factices pour les locataires
-function generateTenantTickets() {
-    const tickets = [
-        { title: 'Paiement dû', date: 'dans 5 jours', message: 'Votre loyer est dû le 20 mars.', status: 'warning' },
-        { title: 'Entretien prévu', date: 'il y a 2 jours', message: 'Un technicien passera le 18 mars pour une vérification.', status: 'info' }
-    ];
+// Fonction pour générer des tickets pour les locataires
+async function generateTenantTickets() {
+    try {
+        const response = await fetch('/api/ticket/myTickets', {
+            headers: {
+                'Authorization': `Bearer ${getToken()}`
+            }
+        });
 
-    const ticketsContainer = document.getElementById('tenant-tickets');
-    if (ticketsContainer) {
-        ticketsContainer.innerHTML = tickets.length === 0 ? '<p class="text-muted p-4 text-center">Aucun ticket</p>' : '';
-        tickets.forEach(ticket => {
-            const statusClass = ticket.status === 'success' ? 'success' : 
-                               ticket.status === 'warning' ? 'warning' : 
-                               ticket.status === 'danger' ? 'danger' : 'info';
-            const statusIcon = ticket.status === 'success' ? 'check-circle' : 
-                              ticket.status === 'warning' ? 'exclamation-triangle' : 
-                              ticket.status === 'danger' ? 'exclamation-circle' : 'info-circle';
-            
-            const ticketElement = document.createElement('div');
-            ticketElement.className = 'list-group-item list-group-item-action border-0 border-bottom';
-            ticketElement.innerHTML = `
-                <div class="d-flex align-items-start">
-                    <div class="me-3">
-                        <span class="badge bg-${statusClass}-subtle text-${statusClass} p-2 rounded-circle">
-                            <i class="bi bi-${statusIcon}"></i>
-                        </span>
-                    </div>
-                    <div class="flex-grow-1">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h6 class="mb-1 fw-semibold">${ticket.title}</h6>
-                            <small class="text-muted">${ticket.date}</small>
+        if (!response.ok) {
+            throw new Error('Erreur lors du chargement des tickets');
+        }
+
+        const tickets = await response.json();
+        const ticketsContainer = document.getElementById('tenant-tickets');
+
+        if (ticketsContainer) {
+            if (tickets.length === 0) {
+                ticketsContainer.innerHTML = '<p class="text-muted p-4 text-center">Aucun ticket</p>';
+                return;
+            }
+
+            ticketsContainer.innerHTML = '';
+            tickets.forEach(ticket => {
+                const statusClass = ticket.status === 'opened' ? 'success' : 'secondary';
+                const statusIcon = ticket.status === 'opened' ? 'check-circle' : 'x-circle';
+                
+                const ticketElement = document.createElement('div');
+                ticketElement.className = 'list-group-item list-group-item-action border-0 border-bottom';
+                ticketElement.innerHTML = `
+                    <div class="d-flex align-items-start">
+                        <div class="me-3">
+                            <span class="badge bg-${statusClass}-subtle text-${statusClass} p-2 rounded-circle">
+                                <i class="bi bi-${statusIcon}"></i>
+                            </span>
                         </div>
-                        <p class="mb-1 text-muted small">${ticket.message}</p>
+                        <div class="flex-grow-1">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1 fw-semibold">${ticket.category}</h6>
+                                <small class="text-muted">${new Date(ticket.updatedAt).toLocaleDateString('fr-FR')}</small>
+                            </div>
+                            <p class="mb-1 text-muted small">${ticket.description}</p>
+                        </div>
                     </div>
+                `;
+                ticketsContainer.appendChild(ticketElement);
+            });
+        }
+    } catch (error) {
+        console.error('Erreur lors du chargement des tickets:', error);
+        const ticketsContainer = document.getElementById('tenant-tickets');
+        if (ticketsContainer) {
+            ticketsContainer.innerHTML = `
+                <div class="alert alert-danger m-3">
+                    <i class="bi bi-exclamation-triangle me-2"></i> Impossible de charger les tickets: ${error.message}
                 </div>
             `;
-            ticketsContainer.appendChild(ticketElement);
-        });
+        }
     }
 }
 
@@ -389,13 +444,13 @@ async function initDashboard() {
             document.getElementById('owner-section').classList.remove('d-none');
             document.getElementById('tenant-section').classList.add('d-none');
             await loadOwnerDashboard();
-            generateOwnerTickets();
+            await generateOwnerTickets();
         } else {
             console.log("Affichage de la section locataire");
             document.getElementById('tenant-section').classList.remove('d-none');
             document.getElementById('owner-section').classList.add('d-none');
             await loadTenantDashboard();
-            generateTenantTickets();
+            await generateTenantTickets();
         }
     }
 
