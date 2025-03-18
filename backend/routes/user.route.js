@@ -7,6 +7,9 @@ const auth = require("../middlewares/authentication")
 router.post('/create', userController.createUser);
 router.post('/login', userController.login);
 
+// Next routes require authentication (remove in each route)
+// router.use(auth.authenticateJwt);
+
 // Protected routes
 router.get(
     '/myProperty',
