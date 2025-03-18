@@ -118,6 +118,7 @@ async function getOwnerPayments(userId) {
                 attributes: ['address', 'city']
             }
         ],
+        order: [['createdAt', 'DESC']]
     });
 
     return payments;
@@ -146,6 +147,7 @@ async function getTenantPayments(userId) {
                 attributes: ['address', 'city']
             }
         ],
+        order: [['createdAt', 'DESC']]
     });
 
     return payments;
