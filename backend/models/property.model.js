@@ -30,7 +30,7 @@ const Property = sequelize.define('Property', {
   },
   ownerId: {
     type: DataTypes.INTEGER,
-    allowNull: false, // null = available
+    allowNull: true, // null = deleted by owner
     references: {
       model: 'users',
       key: 'id'
