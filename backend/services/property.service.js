@@ -5,7 +5,7 @@ const { AppError } = require('../middlewares/errorHandler');
 async function createProperty(userId, data) {
     const { detail, rent, surface, city, address } = data;
 
-    // Verfy that owner has "owner" role
+    // Verify that owner has "owner" role
     const owner = await User.findByPk(userId);
     if (!owner || owner.role !== "owner") {
         throw new AppError('User needs the "owner" role', 400);
@@ -25,24 +25,25 @@ async function createProperty(userId, data) {
 }
 
 async function updateProperty(userId, propertyId, data) {
-    // Get property by id
-    const property = await Property.findByPk(propertyId);
+    // Get property with owner association
+    const property = await Property.findOne({
+        where: { id: propertyId, ownerId: userId }
+    });
 
-    // Verify property existence
+    // Verify property existence and ownership
     if (!property) {
-        throw new AppError('Property not found', 404);
-    }
-
-    // Verify user ownership
-    if (userId !== property.ownerId) {
-        throw new AppError('You are not the owner of this property', 403);
+        throw new AppError('Property not found or you are not the owner', 404);
     }
 
     // Verify if new tenant already has a property
     const { tenantId } = data;
-    const existingProperty = await getPropertyByTenantId(tenantId);
-    if (existingProperty) {
-        throw new AppError('Tenant already lives in a property', 400);
+    if (tenantId) {
+        const existingProperty = await Property.findOne({
+            where: { tenantId }
+        });
+        if (existingProperty) {
+            throw new AppError('Tenant already lives in a property', 400);
+        }
     }
 
     // update
@@ -52,17 +53,14 @@ async function updateProperty(userId, propertyId, data) {
 }
 
 async function deleteProperty(userId, propertyId) {
-    // Get property by id
-    const property = await Property.findByPk(propertyId);
+    // Get property with owner association
+    const property = await Property.findOne({
+        where: { id: propertyId, ownerId: userId }
+    });
 
-    // Verify property existence
+    // Verify property existence and ownership
     if (!property) {
-        throw new AppError('Property not found', 404);
-    }
-
-    // Verify user ownership
-    if (userId !== property.ownerId) {
-        throw new AppError('You are not the owner of this property', 403);
+        throw new AppError('Property not found or you are not the owner', 404);
     }
 
     // Check if property has a tenant
@@ -77,31 +75,28 @@ async function deleteProperty(userId, propertyId) {
 }
 
 async function getPropertyInfo(userId, propertyId) {
-    // Get property informations by id
-    const property = await Property.findByPk(propertyId, {
+    // Get property with associations
+    const property = await Property.findOne({
+        where: { id: propertyId, ownerId: userId },
         include: [
             {
                 model: User,
                 as: 'tenant',
                 attributes: { exclude: ['password'] }
-            },
-        ],
+            }
+        ]
     });
 
     if (!property) {
-        throw new AppError('Property not found', 404);
+        throw new AppError('Property not found or you are not the owner', 404);
     }
 
-    // Verify user ownership, then return property
-    if (userId !== property.ownerId) {
-        throw new AppError('You are not the owner of this property', 403);
-    } else {
-        // Create JSON object and delete useless parameters
-        const propertyJson = property.toJSON();
-        delete propertyJson.tenantId;
+    // Create JSON object and delete useless parameters
+    const propertyJson = property.toJSON();
+    delete propertyJson.tenantId;
+    delete propertyJson.ownerId;
 
-        return propertyJson;
-    }
+    return propertyJson;
 }
 
 async function getOwnerProperties(userId) {
@@ -112,16 +107,15 @@ async function getOwnerProperties(userId) {
         throw new AppError('User must have the "owner" role', 400);
     }
 
-    // Get all properties of owner
-    const properties = await Property.findAll({
-        where: { ownerId: userId },
+    // Get all properties of owner using association
+    const properties = await owner.getOwnedProperties({
         include: [
             {
                 model: User,
                 as: 'tenant',
                 attributes: { exclude: ['password'] }
-            },
-        ],
+            }
+        ]
     });
 
     // Transform each property to delete useless attributes
@@ -140,18 +134,15 @@ async function getPropertyByTenantId(userId) {
     if (userId === null) {
         return false;
     }
-    // Verfy that user has "tenant" role
+
+    // Verify that user has "tenant" role
     const tenant = await User.findByPk(userId);
     if (!tenant || tenant.role !== "tenant") {
         throw new AppError('User needs the "tenant" role', 400);
     }
 
-    // Finds a property with the corresponding tenant id
-    const property = await Property.findOne({
-        where: {
-            tenantId: userId
-        },
-        attributes: { exclude: ['ownerId'] },
+    // Get property using tenant association
+    const property = await tenant.getRentedProperty({
         include: [{
             model: User,
             as: 'owner',
