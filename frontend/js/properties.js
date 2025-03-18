@@ -344,7 +344,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 bootstrap.Modal.getInstance(document.getElementById('editPropertyModal')).hide();
                 initPropertiesPage();
             } catch (error) {
-                console.error('Erreur lors de la suppression:', error);
+                if (error.message.includes('Please remove the tenant')) {
+                    alert('Impossible de supprimer ce bien car il est actuellement loué. Veuillez d\'abord retirer le locataire.');
+                } else {
+                    alert('Erreur lors de la suppression : ' + (error.message || 'Veuillez réessayer.'));
+                }
             }
         }
     });

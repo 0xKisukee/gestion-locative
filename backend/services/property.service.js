@@ -65,8 +65,13 @@ async function deleteProperty(userId, propertyId) {
         throw new AppError('You are not the owner of this property', 403);
     }
 
-    // delete
-    await property.destroy();
+    // Check if property has a tenant
+    if (property.tenantId !== null) {
+        throw new AppError('Cannot delete a property that has a tenant. Please remove the tenant first.', 400);
+    }
+
+    // Soft delete by setting ownerId to null
+    await property.update({ ownerId: null });
 
     return true;
 }
