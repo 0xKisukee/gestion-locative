@@ -12,17 +12,50 @@ async function fetchTenantsFromProperties() {
             return [];
         }
 
-        return propertiesWithTenants.map(property => ({
-            tenant: property.tenant,
-            property: {
-                id: property.id,
-                detail: property.detail,
-                address: property.address,
-                city: property.city,
-                rent: property.rent,
-                surface: property.surface
+        // Fetch payment information for each tenant
+        const tenantsWithPayments = await Promise.all(propertiesWithTenants.map(async (property) => {
+            try {
+                const payments = await apiCall(`/api/user/myPayments`);
+                console.log(payments);
+                const duePayments = payments.filter(pay => pay.status === 'due');
+                const incomingPayments = payments.filter(pay => pay.status === 'incoming');
+                
+                return {
+                    tenant: property.tenant,
+                    property: {
+                        id: property.id,
+                        detail: property.detail,
+                        address: property.address,
+                        city: property.city,
+                        rent: property.rent,
+                        surface: property.surface
+                    },
+                    payments: {
+                        due: duePayments.length,
+                        incoming: incomingPayments.length
+                    }
+                };
+            } catch (error) {
+                console.error(`Erreur lors de la récupération des paiements pour le locataire ${property.tenant.id}:`, error);
+                return {
+                    tenant: property.tenant,
+                    property: {
+                        id: property.id,
+                        detail: property.detail,
+                        address: property.address,
+                        city: property.city,
+                        rent: property.rent,
+                        surface: property.surface
+                    },
+                    payments: {
+                        due: 0,
+                        incoming: 0
+                    }
+                };
             }
         }));
+
+        return tenantsWithPayments;
     } catch (error) {
         console.error('Erreur dans fetchTenantsFromProperties:', error);
         document.getElementById('error-text').textContent = error.message || 'Impossible de charger vos locataires.';
@@ -60,10 +93,24 @@ function displayTenants(tenantsWithProperties) {
     document.getElementById('tenants-table-container').classList.remove('d-none');
 
     tenantsWithProperties.forEach(item => {
-        const { tenant, property } = item;
+        const { tenant, property, payments } = item;
         const propertyType = property.detail === 'apartment' ? 'Appartement' : 'Maison';
         const propertyText = `${propertyType} - ${property.address}, ${property.city}`;
         const phoneText = tenant.phone || 'Non renseigné';
+
+        // Determine status badge
+        let statusBadge;
+        let statusTooltip;
+        if (payments.due > 0) {
+            statusBadge = '<span class="badge bg-danger py-2 px-3">En retard</span>';
+            statusTooltip = `${payments.due} paiement(s) en retard`;
+        } else if (payments.incoming > 0) {
+            statusBadge = '<span class="badge bg-warning py-2 px-3">À venir</span>';
+            statusTooltip = `${payments.incoming} paiement(s) à venir`;
+        } else {
+            statusBadge = '<span class="badge bg-success py-2 px-3">À jour</span>';
+            statusTooltip = 'À jour';
+        }
 
         const row = document.createElement('tr');
         row.className = 'feature-row';
@@ -72,7 +119,11 @@ function displayTenants(tenantsWithProperties) {
             <td>${tenant.email}</td>
             <td>${phoneText}</td>
             <td>${propertyText}</td>
-            <td><span class="badge bg-success py-2 px-3">Actif</span></td>
+            <td>
+                <div class="d-inline-block" data-bs-placement="top" title="${statusTooltip}">
+                    ${statusBadge}
+                </div>
+            </td>
             <td>
                 <div class="btn-group">
                     <button class="btn btn-sm btn-outline-primary action-btn btn-view-tenant" data-tenant-id="${tenant.id}" data-property-id="${property.id}" title="Voir détails">
@@ -86,7 +137,6 @@ function displayTenants(tenantsWithProperties) {
         `;
         tableBody.appendChild(row);
     });
-
     attachEventListeners();
 }
 
