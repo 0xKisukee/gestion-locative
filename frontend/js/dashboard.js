@@ -138,11 +138,20 @@ async function loadTenantDashboard() {
     try {
         const propertyInfoElement = document.getElementById('tenant-property-info');
         const user = getCurrentUser();
+        console.log('Current user data:', user); // Debug log
 
-        // Display tenant ID
+        // Display tenant ID with better error handling
         const tenantIdElement = document.getElementById('tenant-id');
-        if (tenantIdElement && user) {
-            tenantIdElement.textContent = user.id;
+        if (tenantIdElement) {
+            if (user && user.userId) {
+                tenantIdElement.textContent = user.userId;
+                tenantIdElement.classList.remove('text-muted');
+                tenantIdElement.classList.add('text-primary');
+            } else {
+                tenantIdElement.textContent = 'Non disponible';
+                tenantIdElement.classList.add('text-muted');
+                tenantIdElement.classList.remove('text-primary');
+            }
         }
 
         const propertyResponse = await fetch('/api/user/myProperty', {
