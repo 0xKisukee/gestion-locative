@@ -6,8 +6,8 @@ export function middleware(request) {
   const protectedPaths = [
     '/dashboard',
     '/properties',
-    '/locataires',
-    '/paiements',
+    '/tenants',
+    '/payments',
     '/tickets'
   ];
 
@@ -39,8 +39,8 @@ export const config = {
   matcher: [
     '/dashboard/:path*',
     '/properties/:path*',
-    '/locataires/:path*',
-    '/paiements/:path*',
+    '/tenants/:path*',
+    '/payments/:path*',
     '/tickets/:path*',
   ],
 };
