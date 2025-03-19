@@ -49,17 +49,17 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/fonctionnalites" className="text-base text-gray-500 hover:text-blue-600 transition-colors">
+                <Link href="/" className="text-base text-gray-500 hover:text-blue-600 transition-colors">
                   Fonctionnalités
                 </Link>
               </li>
               <li>
-                <Link href="/tarifs" className="text-base text-gray-500 hover:text-blue-600 transition-colors">
+                <Link href="/" className="text-base text-gray-500 hover:text-blue-600 transition-colors">
                   Tarifs
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-base text-gray-500 hover:text-blue-600 transition-colors">
+                <Link href="/" className="text-base text-gray-500 hover:text-blue-600 transition-colors">
                   Contact
                 </Link>
               </li>
