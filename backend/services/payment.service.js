@@ -142,6 +142,11 @@ async function getTenantPayments(userId) {
                 attributes: { exclude: ['password'] }
             },
             {
+                model: User,
+                as: 'paymentTenant',
+                attributes: { exclude: ['password'] }
+            },
+            {
                 model: Property,
                 as: 'paymentProperty',
                 attributes: ['address', 'city']
