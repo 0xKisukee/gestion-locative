@@ -100,8 +100,16 @@
   }
   
   /* Button base styles */
+  button {
+    @apply inline-flex items-center justify-center gap-1.5 cursor-pointer
+           rounded-lg border text-sm font-medium 
+           transition-all duration-200 ease-in-out
+           focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+  
+  /* Button base styles */
   .btn-base {
-    @apply inline-flex items-center justify-center gap-1.5 
+    @apply inline-flex items-center justify-center gap-1.5 cursor-pointer
            rounded-lg border text-sm font-medium 
            transition-all duration-200 ease-in-out
            focus:outline-none focus:ring-2 focus:ring-offset-2;
