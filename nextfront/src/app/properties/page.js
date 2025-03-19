@@ -145,7 +145,7 @@ export default function PropertiesPage() {
       setIsLoading(true);
       
       await apiCall(`/api/property/${selectedProperty.id}/setTenant/${assignData.tenantId}`, 'PATCH', {
-        startDate: assignData.startDate
+        entryDate: assignData.startDate
       });
       
       setShowAssignModal(false);
