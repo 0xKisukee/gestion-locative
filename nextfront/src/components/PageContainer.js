@@ -5,7 +5,7 @@ export default function PageContainer({ children }) {
   return (
     <div className="container py-4">
       <Header />
-      <main className="mb-4">
+      <main className="my-12">
         {children}
       </main>
       <Footer />
