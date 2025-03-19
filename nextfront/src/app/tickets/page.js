@@ -233,23 +233,9 @@ export default function TicketsPage() {
         }
     };
 
-    // Ajoutez une référence pour le champ de description
-    const descriptionRef = useRef(null);
-    const messageInputRef = useRef(null);
     // Modal for new ticket
     const NewTicketModal = () => {
         if (!showNewTicketModal) return null;
-
-        // Utilisez useEffect pour maintenir le focus quand l'état change
-        useEffect(() => {
-            console.log('descriptionRef : ', descriptionRef);
-            if (descriptionRef.current) {
-                // Préserver la position du curseur
-                const length = descriptionRef.current.value.length;
-                descriptionRef.current.focus();
-                descriptionRef.current.setSelectionRange(length, length);
-            }
-        }, [newTicketData.description]);
 
         return (
             <div
@@ -346,7 +332,6 @@ export default function TicketsPage() {
                             </label>
                             <textarea
                                 id="description"
-                                ref={descriptionRef}
                                 value={newTicketData.description}
                                 onChange={(e) => setNewTicketData({ ...newTicketData, description: e.target.value })}
                                 rows="3"
@@ -379,16 +364,6 @@ export default function TicketsPage() {
     // Modal for ticket details
     const TicketDetailsModal = () => {
         if (!showTicketDetailsModal || !currentTicket) return null;
-
-        // Utilisez useEffect pour maintenir le focus quand l'état change
-        useEffect(() => {
-            if (messageInputRef.current) {
-                // Préserver la position du curseur
-                const length = messageInputRef.current.value.length;
-                messageInputRef.current.focus();
-                messageInputRef.current.setSelectionRange(length, length);
-            }
-        }, [newMessage]);
         
         // Fermer la modale avec la touche Escape
         return (
@@ -552,7 +527,6 @@ export default function TicketsPage() {
                                     <form onSubmit={sendMessage} className="flex">
                                         <input
                                             type="text"
-                                            ref={messageInputRef}
                                             value={newMessage}
                                             onChange={(e) => setNewMessage(e.target.value)}
                                             placeholder="Votre message..."
