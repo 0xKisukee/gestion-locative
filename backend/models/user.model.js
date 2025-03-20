@@ -32,16 +32,6 @@ const User = sequelize.define('User', {
     allowNull: true,
     defaultValue: 'tenant',
   },
-  iban: {
-    type: DataTypes.STRING,
-    allowNull: true,
-    defaultValue: 'FR76 1234 5678 9101 1121 3141 516', // URGENT: change to true value
-  },
-  bic: {
-    type: DataTypes.STRING,
-    allowNull: true,
-    defaultValue: 'AGRIFPPP123', // URGENT: change to true value
-  },
 }, {
   tableName: 'users',
   createdAt: true,

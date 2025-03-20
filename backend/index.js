@@ -17,12 +17,12 @@ const app = express();
 const PORT = process.env.PORT;
 
 // Authorize requests from frontend
-const allowedOrigins = ['http://frontend:80', 'http://localhost:3000', 'http://example.com'];
-
 app.use(cors({
     origin: 'http://frontend:80', // Frontend
-
-}));
+    methods: ['GET', 'POST', 'DELETE', 'PUT', 'PATCH', 'OPTIONS'],
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization']
+  }));
 
 // Middleware for JSON requests
 app.use(express.json());
