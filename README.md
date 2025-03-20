@@ -1,2 +1,2 @@
-# gestion-sci
-Application de gestion SCI
+# Gestion Locative
+Application de gestion locative
