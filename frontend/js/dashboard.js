@@ -141,8 +141,16 @@ async function loadTenantDashboard() {
 
         // Display tenant ID
         const tenantIdElement = document.getElementById('tenant-id');
-        if (tenantIdElement && user) {
-            tenantIdElement.textContent = user.id;
+        if (tenantIdElement) {
+            if (user && user.userId) {
+                tenantIdElement.textContent = user.userId;
+                tenantIdElement.classList.remove('text-muted');
+                tenantIdElement.classList.add('text-primary');
+            } else {
+                tenantIdElement.textContent = 'Non disponible';
+                tenantIdElement.classList.add('text-muted');
+                tenantIdElement.classList.remove('text-primary');
+            }
         }
 
         const propertyResponse = await fetch('/api/user/myProperty', {
@@ -258,7 +266,7 @@ async function loadTenantDashboard() {
         const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
         document.getElementById('next-payment-date').textContent = lastDayOfMonth.toLocaleDateString('fr-FR'); // À adapter
         document.getElementById('next-payment-amount').textContent = `${property.rent} €`; // OK
-        
+
         // Mettre à jour le statut de paiement avec une couleur appropriée
         const paymentStatus = document.getElementById('payment-status');
 
@@ -272,7 +280,7 @@ async function loadTenantDashboard() {
             paymentStatus.textContent = 'Situation à régulariser';
             paymentStatus.className = 'badge bg-danger rounded-pill px-3 py-2';
         }
-        
+
     } catch (error) {
         console.error('Erreur lors du chargement de la location:', error);
         const propertyInfoElement = document.getElementById('tenant-property-info');
@@ -325,7 +333,7 @@ async function generateOwnerTickets() {
             tickets.forEach(ticket => {
                 const statusClass = ticket.status === 'opened' ? 'success' : 'secondary';
                 const statusIcon = ticket.status === 'opened' ? 'check-circle' : 'x-circle';
-                
+
                 const ticketElement = document.createElement('div');
                 ticketElement.className = 'list-group-item list-group-item-action border-0 border-bottom';
                 ticketElement.innerHTML = `
@@ -386,7 +394,7 @@ async function generateTenantTickets() {
             tickets.forEach(ticket => {
                 const statusClass = ticket.status === 'opened' ? 'success' : 'secondary';
                 const statusIcon = ticket.status === 'opened' ? 'check-circle' : 'x-circle';
-                
+
                 const ticketElement = document.createElement('div');
                 ticketElement.className = 'list-group-item list-group-item-action border-0 border-bottom';
                 ticketElement.innerHTML = `
@@ -457,12 +465,12 @@ async function initDashboard() {
     // Ajouter une animation au survol des cartes
     const cards = document.querySelectorAll('.feature-card');
     cards.forEach(card => {
-        card.addEventListener('mouseenter', function() {
+        card.addEventListener('mouseenter', function () {
             this.style.transform = 'translateY(-10px)';
             this.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.1)';
         });
-        
-        card.addEventListener('mouseleave', function() {
+
+        card.addEventListener('mouseleave', function () {
             this.style.transform = 'translateY(0)';
             this.style.boxShadow = '0 6px 15px rgba(0, 0, 0, 0.08)';
         });

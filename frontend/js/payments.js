@@ -9,7 +9,6 @@ function getCurrentUser() {
     return userJson ? JSON.parse(userJson) : null;
 }
 
-
 // Charger les paiements pour un propriétaire
 async function loadOwnerPayments() {
     try {
