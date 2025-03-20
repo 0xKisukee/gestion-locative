@@ -63,7 +63,9 @@ app.listen(PORT, () => {
             "username": process.env.OWNER_USERNAME,
             "email": process.env.OWNER_EMAIL,
             "password": hashedPassword,
-            "role": "owner"
+            "role": "owner",
+            "iban": process.env.OWNER_IBAN,
+            "bic": process.env.OWNER_BIC
         }
     );
     await User.create(
