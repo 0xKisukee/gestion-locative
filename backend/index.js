@@ -1,6 +1,7 @@
 const express = require('express');
-require('dotenv').config();
+require('dotenv').config({ path: '../.env' });
 const cors = require('cors');
+const cron = require('node-cron');
 
 // Import routes
 const userRoutes = require('./routes/user.route');
@@ -16,19 +17,27 @@ const { errorHandler } = require("./middlewares/errorHandler");
 const app = express();
 const PORT = process.env.PORT;
 
+cron.schedule('* * * * *', async () => {
+    const { createRentsLoop } = require('./services/payment.service.js');
+    try {
+        console.log(`Démarrage de la création des nouveaux loyers : ${new Date()}`);
+        const payments = await createRentsLoop();
+        console.log(`Création des loyers terminée: ${payments.length} paiements créés`);
+    } catch (error) {
+        console.error(`Erreur lors de la création des loyers: ${error.message}`);
+    }
+});
+
 // Authorize requests from frontend
 app.use(cors({
-    origin: 'http://frontend:80', // Frontend
+    origin: 'http://127.0.0.1:5173', // Frontend
     methods: ['GET', 'POST', 'DELETE', 'PUT', 'PATCH', 'OPTIONS'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization']
-  }));
+}));
 
 // Middleware for JSON requests
 app.use(express.json());
-
-//Serve static files of frontend
-app.use(express.static('../frontend'));
 
 // Routes
 app.use('/api/user', userRoutes);

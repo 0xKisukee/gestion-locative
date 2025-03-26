@@ -6,7 +6,7 @@ function clearLocalStorage() {
 // API related functions
 
 // Base API URL
-const API_BASE_URL = ''; // Change this to match your API endpoint
+const API_BASE_URL = 'http://127.0.0.1:8000'; // Change this to match your API endpoint
 
 // Generic API call function
 async function apiCall(endpoint, method = 'GET', data = null) {

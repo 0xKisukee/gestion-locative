@@ -1,2 +1,7 @@
 # secret
 .cursorignore
+
+**node_modules**
+
+**.env**
+.env
