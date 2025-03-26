@@ -1,6 +1,5 @@
 <template>
-    <header class="bg-white/70 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50 transition-all duration-300" 
-            :class="{ 'shadow-md': scrolled }">
+    <header class="bg-white/70 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50 transition-all duration-300">
         <nav class="container mx-auto px-6 py-3">
             <div class="flex items-center justify-between">
                 
@@ -102,26 +101,13 @@ const closeUserMenu = () => {
     userMenuOpen.value = false
 }
 
-// Scroll detection for shadow effect
-const scrolled = ref(false)
-const handleScroll = () => {
-    scrolled.value = window.scrollY > 10
-}
-
-onMounted(() => {
-    window.addEventListener('scroll', handleScroll)
-})
-
-onUnmounted(() => {
-    window.removeEventListener('scroll', handleScroll)
-})
 
 // User initials for avatar
 const userInitials = computed(() => {
     if (!authStore.user) return 'U'
-    const firstName = authStore.user.firstName || ''
-    const lastName = authStore.user.lastName || ''
-    return (firstName.charAt(0) + (lastName.charAt(0) || '')).toUpperCase()
+    const firstName = authStore.user.username || ''
+    const lastName = authStore.user.username || ''
+    return (firstName.charAt(0) + (lastName.charAt(1) || '')).toUpperCase()
 })
 
 const handleLogout = async () => {
@@ -134,18 +120,4 @@ const handleLogout = async () => {
     }
 }
 
-// Click outside directive
-const vClickOutside = {
-    mounted(el, binding) {
-        el._clickOutside = (event) => {
-            if (!(el === event.target || el.contains(event.target))) {
-                binding.value(event)
-            }
-        }
-        document.addEventListener('click', el._clickOutside)
-    },
-    unmounted(el) {
-        document.removeEventListener('click', el._clickOutside)
-    }
-}
 </script>
