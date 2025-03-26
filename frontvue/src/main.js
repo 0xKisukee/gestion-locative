@@ -10,6 +10,12 @@ import axios from 'axios'
 axios.defaults.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 axios.defaults.headers.common['Content-Type'] = 'application/json'
 
+const app = createApp(App)
+const pinia = createPinia()
+
+app.use(pinia)
+app.use(router)
+
 // Add request interceptor for authentication
 axios.interceptors.request.use(
   config => {
@@ -38,9 +44,9 @@ axios.interceptors.response.use(
   }
 )
 
-const app = createApp(App)
-
-app.use(createPinia())
-app.use(router)
+// Check authentication state before mounting
+import { useAuthStore } from './stores/auth'
+const authStore = useAuthStore()
+authStore.checkAuth()
 
 app.mount('#app')

@@ -13,9 +13,6 @@ const handleLogout = () => {
 </script>
 
 <template>
-  <Navbar />
-
-  <div class="min-h-screen bg-gray-50">
 
     <!-- Hero Section -->
     <section class="bg-gradient-to-r from-primary to-primary-dark text-white py-20">
@@ -39,8 +36,5 @@ const handleLogout = () => {
         </div>
       </div>
     </section>
-
-  </div>
   
-  <Footer />
 </template>

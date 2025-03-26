@@ -29,4 +29,10 @@ router.patch(
     userController.recordPayment,
 );
 
+router.get(
+    '/me',
+    auth.authenticateJwt,
+    userController.getUser,
+);
+
 module.exports = router;

@@ -1,7 +1,4 @@
 <template>
-    <Navbar />
-  <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-
     <!-- Main Content -->
     <main class="container mx-auto px-6 py-12">
       <div class="max-w-md mx-auto">
@@ -79,8 +76,6 @@
 
       </div>
     </main>
-  </div>
-  <Footer />
 </template>
 
 <script setup>

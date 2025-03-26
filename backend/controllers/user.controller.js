@@ -75,10 +75,20 @@ async function recordPayment(req, res, next) {
     }
 }
 
+async function getUser(req, res, next) {
+    try {
+        const user = await userService.getUser(req.auth.userId);
+        res.json(user);
+    } catch (err) {
+        next(err);
+    }
+}
+
 module.exports = {
     createUser,
     login,
     getProperty,
     getPayments,
     recordPayment,
+    getUser,
 };

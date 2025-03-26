@@ -47,7 +47,7 @@ async function login(data) {
             role: user.role // 'owner' or 'tenant'
         },
         process.env.JWT_SECRET,
-        { expiresIn: '1h' }
+        { expiresIn: '1m' }
     );
 
     return {
@@ -60,7 +60,14 @@ async function login(data) {
         }
     };
 }
+
+async function getUser(userId) {
+    const user = await User.findByPk(userId);
+    return user;
+}
+
 module.exports = {
     createUser,
     login,
+    getUser,
 };
