@@ -47,6 +47,7 @@ axios.interceptors.response.use(
 // Check authentication state before mounting
 import { useAuthStore } from './stores/auth'
 const authStore = useAuthStore()
+console.log("Checking auth (on refresh)" + authStore)
 authStore.checkAuth()
 
 app.mount('#app')
