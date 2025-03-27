@@ -1,133 +1,43 @@
 <script setup>
 import { useAuthStore } from '@/stores/auth'
-import { useRouter } from 'vue-router'
-import { ref, onMounted } from 'vue'
 
 const authStore = useAuthStore()
-const router = useRouter()
-const showFeatures = ref(false)
-const showTestimonials = ref(false)
-
-const handleLogout = () => {
-  authStore.logout()
-  router.push('/login')
-}
-
-onMounted(() => {
-  setTimeout(() => {
-    showFeatures.value = true
-  }, 300)
-
-  setTimeout(() => {
-    showTestimonials.value = true
-  }, 600)
-})
 </script>
 
 <template>
   <!-- Hero Section -->
-  <section class="relative overflow-hidden bg-gradient-to-r from-primary to-primary-dark text-white py-24">
-    <!-- Cercles décoratifs -->
-    <div class="absolute -top-24 -right-24 w-96 h-96 bg-white/5 rounded-full blur-2xl"></div>
-    <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-white/5 rounded-full blur-2xl"></div>
-
-    <div class="container mx-auto px-4 relative z-10">
-      <div class="flex flex-col md:flex-row items-center justify-between gap-12">
+  <section class="overflow-hidden text-black py-30">
+    <div class="container mx-auto px-4  z-10">
+      <div class="flex items-center justify-between">
         <div class="max-w-2xl">
-          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-            Simplifiez la gestion de vos <span class="relative">
-              biens
-              <svg class="absolute -bottom-2 left-0 w-full" height="8" viewBox="0 0 120 8"
-                xmlns="http://www.w3.org/2000/svg">
-                <path d="M0 4C20 0 50 0 70 4C90 8 105 8 120 4" fill="none" stroke="white" stroke-width="3"
-                  stroke-linecap="round" />
-              </svg>
-            </span> immobiliers
+          <h1 class="text-5xl font-bold mb-6 leading-tight">
+            Simplifiez la gestion de vos biens immobiliers
           </h1>
-          <p class="text-xl mb-8 text-white/90">
+          <p class="text-xl mb-8 text-black/90">
             Une solution complète pour gérer vos propriétés, locataires et paiements en toute simplicité. Gagnez du
             temps et réduisez votre stress.
           </p>
-          <div class="flex flex-wrap gap-4">
+
+          <div class="flex gap-4">
+
             <template v-if="!authStore.isAuthenticated">
               <router-link to="/register"
-                class="px-8 py-4 bg-white text-primary font-medium rounded-xl hover:bg-gray-100 transition-all duration-300 shadow-lg shadow-black/10 hover:shadow-xl hover:shadow-black/20 flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
-                    clip-rule="evenodd" />
-                </svg>
+                class="px-8 py-4 bg-white font-medium rounded-xl duration-300 shadow-lg shadow-black/10 hover:bg-gray-100 hover:shadow-xl items-center">
                 Commencer gratuitement
               </router-link>
               <router-link to="/login"
-                class="px-8 py-4 border-2 border-white text-white font-medium rounded-xl hover:bg-white/10 transition-all duration-300 flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd"
-                    d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"
-                    clip-rule="evenodd" />
-                </svg>
+                class="px-8 py-4 bg-white font-medium rounded-xl duration-300 shadow-lg shadow-black/10 hover:bg-gray-100 hover:shadow-xl items-center">
                 Se connecter
               </router-link>
             </template>
+
             <template v-else>
               <router-link to="/dashboard"
-                class="px-8 py-4 bg-white text-primary font-medium rounded-xl hover:bg-gray-100 transition-all duration-300 shadow-lg shadow-black/10 hover:shadow-xl hover:shadow-black/20 flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd"
-                    d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5V5h10v7H8.771z"
-                    clip-rule="evenodd" />
-                </svg>
-                Accéder à mon espace
+                class="px-8 py-4 bg-white font-medium rounded-xl duration-300 shadow-lg shadow-black/10 hover:bg-gray-100 hover:shadow-xl items-center">
+                Mon tableau de bord
               </router-link>
             </template>
-          </div>
 
-          <!-- Badges -->
-          <div class="mt-12 flex items-center space-x-6">
-            <div class="text-white/60 flex items-center text-sm">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clip-rule="evenodd" />
-              </svg>
-              Sans engagement
-            </div>
-            <div class="text-white/60 flex items-center text-sm">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clip-rule="evenodd" />
-              </svg>
-              Support 7j/7
-            </div>
-            <div class="text-white/60 flex items-center text-sm">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clip-rule="evenodd" />
-              </svg>
-              100% sécurisé
-            </div>
-          </div>
-        </div>
-
-        <!-- Image mockup -->
-        <div class="hidden md:block w-full max-w-lg">
-          <div class="relative">
-            <!-- Dashboard mockup -->
-            <div class="rounded-2xl bg-white shadow-2xl shadow-black/20 overflow-hidden">
-              <div class="bg-gray-100 h-6 flex items-center px-4 border-b">
-                <div class="flex space-x-2">
-                  <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
-                  <div class="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
-                  <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Éléments décoratifs -->
-            <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-primary/20 rounded-full blur-xl"></div>
-            <div class="absolute -top-6 -left-6 w-32 h-32 bg-primary/20 rounded-full blur-xl"></div>
           </div>
         </div>
       </div>
@@ -167,8 +77,7 @@ onMounted(() => {
           efficace</p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8"
-        :class="{ 'opacity-0 translate-y-10': !showFeatures, 'opacity-100 translate-y-0 transition-all duration-700 ease-out': showFeatures }">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 opacity-100 translate-y-0 transition-all duration-700 ease-out">
         <!-- Carte 1 -->
         <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
           <div class="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-5">
@@ -301,114 +210,6 @@ onMounted(() => {
     </div>
   </section>
 
-  <!-- Témoignages -->
-  <section class="py-20 bg-white">
-    <div class="container mx-auto px-4">
-      <div class="max-w-3xl mx-auto text-center mb-16">
-        <h2 class="text-3xl font-bold mb-4">Ce que disent nos utilisateurs</h2>
-        <p class="text-gray-600 text-lg">Des milliers de propriétaires nous font confiance pour la gestion de leur
-          patrimoine immobilier</p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8"
-        :class="{ 'opacity-0 translate-y-10': !showTestimonials, 'opacity-100 translate-y-0 transition-all duration-700 ease-out': showTestimonials }">
-        <!-- Témoignage 1 -->
-        <div class="bg-white p-6 rounded-xl shadow-md">
-          <div class="flex items-center mb-4">
-            <div>
-              <h4 class="font-semibold">Pierre Durand</h4>
-              <div class="text-sm text-gray-500">Propriétaire de 5 appartements</div>
-            </div>
-          </div>
-          <div class="mb-4">
-            <div class="flex text-yellow-400">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path
-                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path
-                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path
-                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path
-                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
-            </div>
-          </div>
-          <p class="text-gray-600 italic">"Grâce à cette plateforme, j'ai économisé un temps précieux dans la gestion de mes biens. Les quittances automatiques et le suivi des paiements sont impeccables."</p>
-        </div>
-        
-        <!-- Témoignage 2 -->
-        <div class="bg-white p-6 rounded-xl shadow-md">
-          <div class="flex items-center mb-4">
-            <div>
-              <h4 class="font-semibold">Marie Lambert</h4>
-              <div class="text-sm text-gray-500">Investisseuse immobilière</div>
-            </div>
-          </div>
-          <div class="mb-4">
-            <div class="flex text-yellow-400">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
-            </div>
-          </div>
-          <p class="text-gray-600 italic">"Les tableaux de bord financiers m'ont permis d'avoir une vision claire de la rentabilité de chacun de mes investissements. Un outil indispensable!"</p>
-        </div>
-        
-        <!-- Témoignage 3 -->
-        <div class="bg-white p-6 rounded-xl shadow-md">
-          <div class="flex items-center mb-4">
-            <div>
-              <h4 class="font-semibold">Thomas Bertrand</h4>
-              <div class="text-sm text-gray-500">Propriétaire immobilier</div>
-            </div>
-          </div>
-          <div class="mb-4">
-            <div class="flex text-yellow-400">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
-            </div>
-          </div>
-          <p class="text-gray-600 italic">"Le support client est exceptionnel. Chaque fois que j'ai eu une question, j'ai obtenu une réponse rapide et précise. Je recommande vivement!"</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- CTA -->
   <section class="py-16 bg-primary/5">
     <div class="container mx-auto px-4">
@@ -438,17 +239,17 @@ onMounted(() => {
               </li>
             </ul>
           </div>
-          <div class="w-full md:w-auto">
+          <div class="space-y-5">
             <template v-if="!authStore.isAuthenticated">
               <router-link to="/register"
-                class="w-full md:w-auto block text-center px-8 py-4 bg-primary text-white font-medium rounded-xl hover:bg-primary-dark transition-all duration-300 shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 flex items-center justify-center mb-4">
+                class="md:w-auto block text-center px-8 py-4 text-black font-medium rounded-xl hover:bg-primary-dark transition-all duration-300 shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 flex items-center justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
                 </svg>
                 Créer un compte gratuit
               </router-link>
               <router-link to="/login"
-                class="w-full md:w-auto block text-center px-8 py-4 border-2 border-primary text-primary font-medium rounded-xl hover:bg-primary/5 transition-all duration-300 flex items-center justify-center">
+                class="md:w-auto block text-center px-8 py-4 text-black font-medium rounded-xl hover:bg-primary-dark transition-all duration-300 shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 flex items-center justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd" />
                 </svg>
@@ -457,11 +258,11 @@ onMounted(() => {
             </template>
             <template v-else>
               <router-link to="/dashboard"
-                class="w-full md:w-auto block text-center px-8 py-4 bg-primary text-white font-medium rounded-xl hover:bg-primary-dark transition-all duration-300 shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 flex items-center justify-center">
+                class="md:w-auto block text-center px-8 py-4 text-black font-medium rounded-xl hover:bg-primary-dark transition-all duration-300 shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 flex items-center justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5V5h10v7H8.771z" clip-rule="evenodd" />
                 </svg>
-                Accéder à mon espace
+                Mon tableau de bord
               </router-link>
             </template>
           </div>

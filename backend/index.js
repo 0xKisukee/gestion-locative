@@ -30,7 +30,7 @@ cron.schedule('* * * * *', async () => {
 
 // Authorize requests from frontend
 app.use(cors({
-    origin: 'http://127.0.0.1:5173', // Frontend
+    origin: 'http://localhost:5173', // Frontend
     methods: ['GET', 'POST', 'DELETE', 'PUT', 'PATCH', 'OPTIONS'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization']

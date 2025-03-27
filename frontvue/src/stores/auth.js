@@ -13,14 +13,14 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const response = await axios.post('/api/user/login', { email, password })
       const { token: newToken, user: newUser } = response.data
-      
+
       token.value = newToken
       user.value = newUser
       isAuthenticated.value = true
-      
+
       localStorage.setItem('token', newToken)
       localStorage.setItem('user', JSON.stringify(newUser))
-      
+
       return true
     } catch (error) {
       console.error('Login error:', error)
@@ -49,12 +49,12 @@ export const useAuthStore = defineStore('auth', () => {
   async function checkAuth() {
     const storedToken = localStorage.getItem('token')
     const storedUser = JSON.parse(localStorage.getItem('user'))
-    
+
     if (storedToken && storedUser) {
       try {
         // Vérifier si le token est valide en faisant une requête à l'API
         await axios.get('/api/user/me')
-        
+
         token.value = storedToken
         user.value = storedUser
         isAuthenticated.value = true
@@ -65,7 +65,7 @@ export const useAuthStore = defineStore('auth', () => {
         return false
       }
     }
-    
+
     return false
   }
 
@@ -79,4 +79,4 @@ export const useAuthStore = defineStore('auth', () => {
     logout,
     checkAuth
   }
-}) 
+})

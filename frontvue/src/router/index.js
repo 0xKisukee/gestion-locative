@@ -63,22 +63,22 @@ const router = createRouter({
 // Navigation guard
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
-  
+
   // Vérifier l'authentification
   const isAuthenticated = await authStore.checkAuth()
-  
+
   // Si la route nécessite une authentification
   if (to.meta.requiresAuth && !isAuthenticated) {
     next('/login')
     return
   }
-  
+
   // Si la route nécessite d'être non authentifié
   if (to.meta.requiresGuest && isAuthenticated) {
     next('/dashboard')
     return
   }
-  
+
   next()
 })
 
