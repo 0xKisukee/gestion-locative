@@ -61,6 +61,7 @@ export const useAuthStore = defineStore('auth', () => {
         return true
       } catch (error) {
         // Si le token est invalide ou expiré, on déconnecte l'utilisateur
+        console.log(error)
         logout()
         return false
       }
